@@ -37,7 +37,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:alpha="0"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="28dp"
                 app:boxCornerRadiusBottomStart="28dp"
@@ -46,18 +45,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/titleRegister"
-                app:startIconDrawable="@drawable/baseline_person_24"
-                tools:alpha="100">
+                app:startIconDrawable="@drawable/baseline_person_24">
 
                 <EditText
                     android:id="@+id/ed_register_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:paddingStart="50dp"
                     android:hint="Name "
-                    android:textSize="22sp"
+                    android:paddingStart="50dp"
                     android:textColor="@color/navy_blue"
+                    android:textSize="22sp"
                     tools:ignore="RtlSymmetry,SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -70,7 +68,6 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
-                android:alpha="0"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="28dp"
                 app:boxCornerRadiusBottomStart="28dp"
@@ -79,8 +76,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameEditTextLayout"
-                app:startIconDrawable="@drawable/baseline_email_24"
-                tools:alpha="100">
+                app:startIconDrawable="@drawable/baseline_email_24">
 
                 <EditText
                     android:id="@+id/ed_register_email"
@@ -103,7 +99,6 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
-                android:alpha="0"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="28dp"
                 app:boxCornerRadiusBottomStart="28dp"
@@ -113,8 +108,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/emailEditTextLayout"
-                app:startIconDrawable="@drawable/baseline_lock_24"
-                tools:alpha="100">
+                app:startIconDrawable="@drawable/baseline_lock_24">
 
                 <EditText
                     android:id="@+id/ed_register_password"
@@ -139,12 +133,10 @@
                 android:backgroundTint="@color/navy_blue"
                 android:textColor="@color/white"
                 android:textSize="25sp"
-                android:text="Login"
-                android:alpha="0"
+                android:text="Register"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/passwordEditTextLayout"
-                tools:alpha="100"/>
+                app:layout_constraintTop_toBottomOf="@+id/passwordEditTextLayout" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -163,6 +155,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/btnLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
