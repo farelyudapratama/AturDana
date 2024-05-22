@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "16531605004",
+    "project_id": "financial-management-ddcdb",
+    "storage_bucket": "financial-management-ddcdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16531605004:android:780aa76a72adff4e609029",
+        "android_client_info": {
+          "package_name": "com.yuch.aturdana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxJsaUaOcrbC0ELT57m0gtUrUzPqUDS6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
