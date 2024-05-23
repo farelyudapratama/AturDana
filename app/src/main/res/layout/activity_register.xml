@@ -37,15 +37,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
+                android:textColorHint="@color/hint_color"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="28dp"
                 app:boxCornerRadiusBottomStart="28dp"
                 app:boxCornerRadiusTopEnd="28dp"
                 app:boxCornerRadiusTopStart="28dp"
+                app:boxStrokeColor="@color/navy_blue"
+                app:hintTextColor="@color/navy_blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/titleRegister"
-                app:startIconDrawable="@drawable/baseline_person_24">
+                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconTint="@color/navy_blue">
 
                 <EditText
                     android:id="@+id/ed_register_name"
@@ -68,15 +72,19 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
+                android:textColorHint="@color/hint_color"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="28dp"
                 app:boxCornerRadiusBottomStart="28dp"
                 app:boxCornerRadiusTopEnd="28dp"
                 app:boxCornerRadiusTopStart="28dp"
+                app:boxStrokeColor="@color/navy_blue"
+                app:hintTextColor="@color/navy_blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameEditTextLayout"
-                app:startIconDrawable="@drawable/baseline_email_24">
+                app:startIconDrawable="@drawable/baseline_email_24"
+                app:startIconTint="@color/navy_blue">
 
                 <EditText
                     android:id="@+id/ed_register_email"
@@ -99,16 +107,21 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
+                android:textColorHint="@color/hint_color"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="28dp"
                 app:boxCornerRadiusBottomStart="28dp"
                 app:boxCornerRadiusTopEnd="28dp"
                 app:boxCornerRadiusTopStart="28dp"
+                app:boxStrokeColor="@color/navy_blue"
+                app:hintTextColor="@color/navy_blue"
                 app:endIconMode="password_toggle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/emailEditTextLayout"
-                app:startIconDrawable="@drawable/baseline_lock_24">
+                app:startIconDrawable="@drawable/baseline_lock_24"
+                app:startIconTint="@color/navy_blue"
+                app:endIconTint="@color/navy_blue">
 
                 <EditText
                     android:id="@+id/ed_register_password"
@@ -152,14 +165,16 @@
                     android:layout_height="match_parent"
                     android:text="Already have an account?  "
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/navy_blue"/>
 
                 <TextView
                     android:id="@+id/btnLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Login"/>
+                    android:text="Login"
+                    android:textColor="@color/navy_blue"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

@@ -5,5 +5,7 @@
     <color name="sky_blue">#6AA6FF</color>
     <color name="dark_blue">#0038FF</color>
     <color name="navy_blue">#263E67</color>
-
+    <color name="hint_color">#96B6EC</color>
+    <color name="active_color">#FF9900</color>
+    <color name="inactive_color">@color/navy_blue</color>
 </resources>

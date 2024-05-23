@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "16531605004",
+    "firebase_url": "https://financial-management-ddcdb-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "financial-management-ddcdb",
     "storage_bucket": "financial-management-ddcdb.appspot.com"
   },
