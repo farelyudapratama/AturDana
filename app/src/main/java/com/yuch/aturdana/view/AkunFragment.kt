@@ -1,60 +1,93 @@
 package com.yuch.aturdana.view
 
+import android.content.ContentValues
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.yuch.aturdana.R
+import com.yuch.aturdana.data.pref.UserModel
+import com.yuch.aturdana.databinding.FragmentAkunBinding
+import com.yuch.aturdana.view.login.LoginActivity
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class AkunFragment : Fragment(R.layout.fragment_akun) {
+    private var _binding: FragmentAkunBinding? = null
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AkunFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class AkunFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+        _binding = FragmentAkunBinding.bind(view)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference
+
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+//            val username = user.displayName
+//            val email = user.email
+            val uid = currentUser.uid
+//            val photoUrl = user.photoUrl.toString()
+
+            database.child("users").child(uid).addListenerForSingleValueEvent(object :
+                ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val user = snapshot.getValue(UserModel::class.java)
+                    user?.let {
+                        _binding?.apply {
+                            tvName.text = it.username
+                            tvEmail.text = it.email
+//                            tvCreateAt.text = it.create_at
+                            Log.d(ContentValues.TAG, "onDataChange: ${it.avatarUrl}")
+                            Glide.with(this@AkunFragment)
+                                .load(it.avatarUrl)
+                                .placeholder(R.drawable.baseline_person_24)
+                                .error(R.drawable.baseline_person_24)
+                                .into(ivAvatar)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle possible errors.
+                    Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+        setupAction()
+    }
+
+    private fun setupAction() {
+        _binding?.apply {
+            tvEditProfile.setOnClickListener {
+                val intent = Intent(requireContext(), EditProfileActivity::class.java)
+                startActivity(intent)
+            }
+            btnLogout.setOnClickListener {
+                auth.signOut()
+                val intent = Intent(requireContext(), LoginActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_akun, container, false)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+//        outState.putString(EXTRA_USERNAME, username)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AkunFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AkunFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

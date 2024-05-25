@@ -8,4 +8,8 @@
     <color name="hint_color">#96B6EC</color>
     <color name="active_color">#FF9900</color>
     <color name="inactive_color">@color/navy_blue</color>
+
+    <color name="my_light_primary">@color/navy_blue</color>
+    <color name="my_dark_primary">#E6F8FF</color>
+
 </resources>

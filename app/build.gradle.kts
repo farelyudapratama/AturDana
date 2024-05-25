@@ -47,12 +47,20 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
     implementation(libs.androidx.navigation.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // firebase auth
+    implementation(libs.firebase.auth)
+
     // realtime database firebase
     implementation(libs.firebase.database.ktx)
+
+    // storage firebase
+    implementation(libs.firebase.storage)
+
+    // Add Glide Library
+    implementation(libs.glide)
 }

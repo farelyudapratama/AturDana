@@ -16,6 +16,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
@@ -46,7 +47,8 @@ class RegisterActivity : AppCompatActivity() {
                         val userMap = hashMapOf(
                             "username" to name,
                             "email" to email,
-                            "created_at" to System.currentTimeMillis()
+                            "avatarUrl" to "https://firebasestorage.googleapis.com/v0/b/financial-management-ddcdb.appspot.com/o/images%2Ffoto.jpg?alt=media&token=a8a480ea-b463-4c76-8be1-ef929af3e461",
+                            "createdAt" to System.currentTimeMillis()
                         )
                         database.child("users").child(uid).setValue(userMap)
                             .addOnCompleteListener { dbTask ->
