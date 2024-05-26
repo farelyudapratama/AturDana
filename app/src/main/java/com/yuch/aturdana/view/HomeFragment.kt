@@ -1,60 +1,134 @@
 package com.yuch.aturdana.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.yuch.aturdana.R
+import com.yuch.aturdana.data.TransactionAdapter
+import com.yuch.aturdana.data.pref.TransactionModel
+import com.yuch.aturdana.databinding.FragmentHomeBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class HomeFragment : Fragment(R.layout.fragment_home) {
+    private lateinit var _binding: FragmentHomeBinding
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentHomeBinding.bind(view)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference
+
+        onViews()
+        displayTransactions()
+        setupInsets()
+    }
+    private fun setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(_binding.root) { view, insets ->
+            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(bottom = systemBarsInsets.bottom)
+            insets
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    private fun displayTransactions() {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val transactionRef = database.child("transaction")
+            val query = transactionRef.orderByChild("user_id").equalTo(userId)
+
+            query.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (!isAdded || context == null) return
+
+                    val transactions = mutableListOf<TransactionModel>()
+                    for (data in dataSnapshot.children) {
+                        val transaction = data.getValue(TransactionModel::class.java)
+                        if (transaction != null) {
+                            transactions.add(transaction)
+                        }
+                    }
+
+                    // Sort transactions by date
+                    transactions.sortByDescending { it.date }
+
+                    // Set up RecyclerView and attach adapter
+                    val adapter = TransactionAdapter(transactions)
+                    _binding.rvTransaksi.adapter = adapter
+                    _binding.rvTransaksi.layoutManager = LinearLayoutManager(requireContext())
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            })
+        }
+    }
+
+    private fun onViews() {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val transactionRef = database.child("transaction")
+            val query = transactionRef.orderByChild("user_id").equalTo(userId)
+
+            query.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (!isAdded || context == null) return
+
+                    var totalPendapatan = 0
+                    var totalPengeluaran = 0
+                    var lastUpdatePendapatan = ""
+                    var lastUpdatePengeluaran = ""
+
+//                    var lastUpdate = ""
+//                    val totalSaldo = totalPendapatan - totalPengeluaran
+
+                    for (data in dataSnapshot.children) {
+                        val type = data.child("type").getValue(String::class.java)
+                        val amount = data.child("amount").getValue(String::class.java)
+                        val date = data.child("date").getValue(String::class.java)
+                        val time = data.child("time").getValue(String::class.java)
+
+                        if (type != null && amount != null && date != null && time != null){
+                            if (type == "Pendapatan") {
+                                totalPendapatan += amount.toInt()
+                                Log.d("HomeFragmentIfStatement", "Total Pendapatan: $totalPendapatan")
+                                lastUpdatePendapatan = "$date $time"
+                            } else if (type == "Pengeluaran") {
+                                totalPengeluaran += amount.toInt()
+                                lastUpdatePengeluaran = "$date $time"
+                            }
+                        }
+                    }
+                    Log.d("HomeFragment", "Total Pendapatan: $totalPendapatan")
+                    _binding.apply {
+                        tvTotalPendapatan.text = "Rp. $totalPendapatan"
+                        tvTotalPengeluaran.text = "Rp. $totalPengeluaran"
+                        tvTerakhirUpdatePendapatan.text = "Terakhir update : $lastUpdatePendapatan"
+                        tvTerakhirUpdatePengeluaran.text = "Terakhir update : $lastUpdatePengeluaran"
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+        }
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
     }
 }

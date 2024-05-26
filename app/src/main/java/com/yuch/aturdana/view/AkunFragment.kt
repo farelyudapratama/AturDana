@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -50,8 +51,6 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
                             Log.d(ContentValues.TAG, "onDataChange: ${it.avatarUrl}")
                             Glide.with(this@AkunFragment)
                                 .load(it.avatarUrl)
-                                .placeholder(R.drawable.baseline_person_24)
-                                .error(R.drawable.baseline_person_24)
                                 .into(ivAvatar)
                         }
                     }
@@ -73,10 +72,21 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
                 startActivity(intent)
             }
             btnLogout.setOnClickListener {
-                auth.signOut()
-                val intent = Intent(requireContext(), LoginActivity::class.java)
-                startActivity(intent)
-                requireActivity().finish()
+                val dialogBuilder = AlertDialog.Builder(requireContext())
+                dialogBuilder.setMessage("Apakah anda yakin untuk logout ini?")
+                    .setCancelable(false)
+                    .setPositiveButton("Ya, logout") { dialog, id ->
+                        auth.signOut()
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
+                    }
+                    .setNegativeButton("Tidak") { dialog, id ->
+                        dialog.dismiss()
+                    }
+                val alert = dialogBuilder.create()
+                alert.setTitle("Logout")
+                alert.show()
             }
         }
     }

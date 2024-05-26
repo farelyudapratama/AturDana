@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -84,11 +85,25 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         binding.btnSave.setOnClickListener {
-            if (uri != null) {
-                uploadImageAndSaveData(uri!!)
-            } else {
-                saveUserProfile(null) // Save user data without changing the avatar
-            }
+            val dialogBuilder = AlertDialog.Builder(this)
+            dialogBuilder.setMessage("Apakah anda yakin untuk menyimpan data ini?")
+                .setCancelable(false)
+                .setPositiveButton("Ya, simpan") { dialog, id ->
+                    if (uri != null) {
+                        uploadImageAndSaveData(uri!!)
+                    } else {
+                        saveUserProfile(null) // Save user data without changing the avatar
+                    }
+                }
+                .setNegativeButton("Tidak") { dialog, id ->
+                    dialog.dismiss()
+                }
+            val alert = dialogBuilder.create()
+            alert.setTitle("Simpan Perubahan")
+            alert.show()
+        }
+        binding.btnCancel.setOnClickListener {
+            finish()
         }
     }
     private fun uploadImageAndSaveData(uri: Uri) {
@@ -114,18 +129,18 @@ class EditProfileActivity : AppCompatActivity() {
         if (currentUser != null) {
             val uid = currentUser.uid
             val username = binding.etNama.text.toString()
-            val email = binding.etEmail.text.toString()
 
             val newUsername = if (username != originalUser.username) username else originalUser.username
-            val newEmail = if (email != originalUser.email) email else originalUser.email
+            val email = originalUser.email // Tetap gunakan email yang sudah ada
             val newAvatarUrl = avatarUrl ?: originalUser.avatarUrl // Pastikan avatarUrl tidak null
             val createdAt = originalUser.createdAt // Tetap gunakan createAt yang sudah ada
 
-            val user = UserModel(newUsername, newEmail, newAvatarUrl, createdAt)
+            val user = UserModel(newUsername, email, newAvatarUrl, createdAt)
 
             database.child(uid).setValue(user)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                    finish()
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()

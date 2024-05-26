@@ -19,15 +19,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <LinearLayout
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
                 android:layout_gravity="center_horizontal">
                 <ImageView
                     android:id="@+id/iv_avatar"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
                     android:contentDescription="Gambar Profile"
-                    android:src="@drawable/baseline_person_24"/>
+                    tools:src="@drawable/baseline_person_24"/>
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fabEdit"
@@ -50,10 +50,12 @@
                     android:layout_marginEnd="20dp"
                     android:textSize="20sp"
                     android:text="Nama : "/>
+
                 <EditText
                     android:id="@+id/et_nama"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -65,26 +67,31 @@
                     android:layout_marginEnd="20dp"
                     android:textSize="20sp"
                     android:text="Email : "/>
+
                 <EditText
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:enabled="false"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
+                android:padding="10dp"
                 android:orientation="horizontal">
                 <Button
                     android:id="@+id/btn_cancel"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="50dp"
+                    android:layout_weight="1"
                     android:text="Batal"/>
                 <Button
                     android:id="@+id/btn_save"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="Simpan"/>
             </LinearLayout>
 
