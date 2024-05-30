@@ -3,9 +3,6 @@ package com.yuch.aturdana.view
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -33,15 +30,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         onViews()
         displayTransactions()
-        setupInsets()
+//        setupInsets()
     }
-    private fun setupInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(_binding.root) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(bottom = systemBarsInsets.bottom)
-            insets
-        }
-    }
+//    private fun setupInsets() {
+//        ViewCompat.setOnApplyWindowInsetsListener(_binding.root) { view, insets ->
+//            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            view.updatePadding(bottom = systemBarsInsets.bottom)
+//            insets
+//        }
+//    }
 
     private fun displayTransactions() {
         val userId = auth.currentUser?.uid

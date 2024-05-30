@@ -87,7 +87,7 @@ class AddActivity : AppCompatActivity() {
         val categories = if (type == "pendapatan") {
             arrayOf("Gaji", "Bonus", "Investasi")
         } else {
-            arrayOf("Belanja", "Transportasi", "Makan")
+            arrayOf("Belanja", "Transportasi", "Makan", "Tagihan")
         }
 
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, categories)
