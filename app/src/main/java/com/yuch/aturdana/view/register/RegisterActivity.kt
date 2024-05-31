@@ -27,12 +27,41 @@ class RegisterActivity : AppCompatActivity() {
 
         setupAction()
     }
+    private fun addDefaultCategories(userId: String) {
+        val defaultCategories = mapOf(
+            "Pendapatan" to listOf("Gaji", "Bonus", "Investasi"),
+            "Pengeluaran" to listOf("Belanja", "Transportasi", "Makan", "Tagihan")
+        )
+
+        for ((type, categories) in defaultCategories) {
+            for (category in categories) {
+                val categoryId = database.child("users").child(userId).child("categories").push().key
+                if (categoryId != null) {
+                    val categoryMap = mapOf(
+                        "name" to category,
+                        "type" to type,
+                        "user_id" to userId
+                    )
+                    database.child("users").child(userId).child("categories").child(categoryId).setValue(categoryMap)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Log.d(TAG, "Category $category, type : $type, added successfully for user $userId")
+                            } else {
+                                Log.w(TAG, "Failed to add category $category for user $userId", task.exception)
+                            }
+                        }
+                } else {
+                    Log.w(TAG, "Failed to generate category ID for user $userId")
+                }
+            }
+        }
+    }
 
     private fun setupAction() {
         binding.registerButton.setOnClickListener {
-            val name = binding.edRegisterName.text?.toString()?:""
-            val email = binding.edRegisterEmail.text?.toString()?:""
-            val password = binding.edRegisterPassword.text?.toString()?:""
+            val name = binding.edRegisterName.text?.toString() ?: ""
+            val email = binding.edRegisterEmail.text?.toString() ?: ""
+            val password = binding.edRegisterPassword.text?.toString() ?: ""
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
@@ -43,31 +72,39 @@ class RegisterActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "createUserWithEmail:success")
-                        val uid = auth.currentUser!!.uid // Get UID of the newly created user
-                        val userMap = hashMapOf(
-                            "username" to name,
-                            "email" to email,
-                            "avatarUrl" to "https://firebasestorage.googleapis.com/v0/b/financial-management-ddcdb.appspot.com/o/images%2Ffoto.jpg?alt=media&token=a8a480ea-b463-4c76-8be1-ef929af3e461",
-                            "createdAt" to System.currentTimeMillis()
-                        )
-                        database.child("users").child(uid).setValue(userMap)
-                            .addOnCompleteListener { dbTask ->
-                                if (dbTask.isSuccessful) {
-                                    Toast.makeText(
-                                        this,
-                                        "Registration successful",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    startActivity(Intent(this, LoginActivity::class.java))
-                                    finish()
-                                } else {
-                                    Toast.makeText(
-                                        this,
-                                        "Failed to save user data",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                        val uid = auth.currentUser?.uid // Get UID of the newly created user
+                        if (uid != null) {
+                            Log.d(TAG, "User ID: $uid")
+                            val userMap = hashMapOf(
+                                "username" to name,
+                                "email" to email,
+                                "avatarUrl" to "https://firebasestorage.googleapis.com/v0/b/financial-management-ddcdb.appspot.com/o/images%2Ffoto.jpg?alt=media&token=a8a480ea-b463-4c76-8be1-ef929af3e461",
+                                "createdAt" to System.currentTimeMillis()
+                            )
+                            database.child("users").child(uid).setValue(userMap)
+                                .addOnCompleteListener { dbTask ->
+                                    if (dbTask.isSuccessful) {
+                                        Toast.makeText(
+                                            this,
+                                            "Registration successful",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        addDefaultCategories(uid)
+                                        startActivity(Intent(this, LoginActivity::class.java))
+                                        finish()
+                                    } else {
+                                        Toast.makeText(
+                                            this,
+                                            "Failed to save user data",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        Log.w(TAG, "Failed to save user data", dbTask.exception)
+                                    }
                                 }
-                            }
+                        } else {
+                            Toast.makeText(this, "User ID is null", Toast.LENGTH_SHORT).show()
+                            Log.w(TAG, "User ID is null")
+                        }
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.exception)
                         Toast.makeText(
