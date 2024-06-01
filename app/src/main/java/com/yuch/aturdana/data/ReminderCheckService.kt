@@ -55,7 +55,8 @@ class ReminderCheckService : Service() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (reminderSnapshot in snapshot.children) {
                         val reminder = reminderSnapshot.getValue(ReminderModel::class.java)
-                        if (reminder != null && reminder.reminderDate == todayDate && reminder.status != "selesai") {
+                        Log.d("ReminderCheckService", "Reminder: $reminder")
+                        if (reminder != null && reminder.reminderDate!! >= todayDate && reminder.status != "selesai") {
                             // Jika pengingat belum selesai dan hari tenggatnya adalah hari ini, tampilkan notifikasi
                             showNotification(reminder)
                         }
@@ -78,7 +79,6 @@ class ReminderCheckService : Service() {
     private fun showNotification(reminder: ReminderModel) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create a notification channel for Android O and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "REMINDER_CHANNEL",
@@ -88,7 +88,6 @@ class ReminderCheckService : Service() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Build the notification
         val notificationIntent = Intent(this, DetailReminderActivity::class.java).apply {
             putExtra("reminderId", reminder.reminderId)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -104,7 +103,6 @@ class ReminderCheckService : Service() {
             .setAutoCancel(true)
             .build()
 
-        // Show the notification
         notificationManager.notify(reminder.reminderId.hashCode(), notification)
     }
 
@@ -113,10 +111,16 @@ class ReminderCheckService : Service() {
         val intent = Intent(this, ReminderCheckService::class.java)
         val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        // Schedule next check every 30 minutes
         val intervalMillis = 30 * 60 * 1000 // 30 minutes in milliseconds
         val triggerAtMillis = SystemClock.elapsedRealtime() + intervalMillis
-        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, pendingIntent)
+
+        // Continue with scheduling the exact alarm
+        try {
+            alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, pendingIntent)
+        } catch (e: SecurityException) {
+            // Handle SecurityException (permission denied)
+            Log.e("ReminderCheckService", "Permission denied for scheduling exact alarm", e)
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? {

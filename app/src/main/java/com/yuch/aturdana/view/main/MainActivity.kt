@@ -1,12 +1,14 @@
 package com.yuch.aturdana.view.main
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.yuch.aturdana.R
+import com.yuch.aturdana.data.ReminderCheckService
 import com.yuch.aturdana.databinding.ActivityMainBinding
 import com.yuch.aturdana.view.AddActivity
 
@@ -21,6 +23,14 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         setupAction()
+
+        val serviceIntent = Intent(this, ReminderCheckService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
+
     }
 
     private fun setupAction() {

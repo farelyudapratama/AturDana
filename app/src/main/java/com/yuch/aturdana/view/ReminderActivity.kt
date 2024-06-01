@@ -61,7 +61,7 @@ class ReminderActivity : AppCompatActivity() {
                 database.child("reminders").child(reminderId).setValue(reminderMap)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Reminder set successfully", Toast.LENGTH_SHORT).show()
-                        setAlarm(reminderId, reminderDesc, calendar.timeInMillis)
+//                        setAlarm(reminderId, reminderDesc, calendar.timeInMillis)
                         finish()
                     }
                     .addOnFailureListener {
@@ -93,6 +93,11 @@ class ReminderActivity : AppCompatActivity() {
         }
         val pendingIntent = PendingIntent.getBroadcast(this, reminderId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+//        try {
+//            alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent)
+//        } catch (e: SecurityException) {
+//            // Handle SecurityException (permission denied)
+//            Log.e("ReminderCheckService", "Permission denied for scheduling exact alarm", e)
+//        }
     }
 }

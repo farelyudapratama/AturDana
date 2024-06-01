@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.ReminderModel
 import com.yuch.aturdana.view.DetailReminderActivity
+import com.yuch.aturdana.view.toCurrencyFormat
 
 class ReminderAdapter(private val reminders: List<ReminderModel>) :
     RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder>() {
@@ -42,7 +43,7 @@ class ReminderAdapter(private val reminders: List<ReminderModel>) :
 
         fun bind(reminder: ReminderModel) {
             tvReminderDesc.text = reminder.reminderDesc
-            tvReminderAmount.text = reminder.reminderAmount
+            tvReminderAmount.text = reminder.reminderAmount?.toDoubleOrNull()?.toCurrencyFormat()
             tvReminderDate.text = reminder.reminderDate
             if (reminder.status == "selesai") {
                 statusIndicator.visibility = View.VISIBLE

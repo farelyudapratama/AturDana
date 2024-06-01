@@ -84,8 +84,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (!isAdded || context == null) return
 
-                    var totalPendapatan = 0
-                    var totalPengeluaran = 0
+                    var totalPendapatan = 0.0
+                    var totalPengeluaran = 0.0
                     var lastUpdatePendapatan = ""
                     var lastUpdatePengeluaran = ""
 
@@ -99,20 +99,21 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         val time = data.child("time").getValue(String::class.java)
 
                         if (type != null && amount != null && date != null && time != null){
+                            val amountDouble = amount.toDoubleOrNull() ?: 0.0
                             if (type == "Pendapatan") {
-                                totalPendapatan += amount.toInt()
+                                totalPendapatan += amountDouble
                                 Log.d("HomeFragmentIfStatement", "Total Pendapatan: $totalPendapatan")
                                 lastUpdatePendapatan = "$date $time"
                             } else if (type == "Pengeluaran") {
-                                totalPengeluaran += amount.toInt()
+                                totalPengeluaran += amountDouble
                                 lastUpdatePengeluaran = "$date $time"
                             }
                         }
                     }
                     Log.d("HomeFragment", "Total Pendapatan: $totalPendapatan")
                     _binding.apply {
-                        tvTotalPendapatan.text = "Rp. $totalPendapatan"
-                        tvTotalPengeluaran.text = "Rp. $totalPengeluaran"
+                        tvTotalPendapatan.setFormattedCurrency(totalPendapatan)
+                        tvTotalPengeluaran.setFormattedCurrency(totalPengeluaran)
                         tvTerakhirUpdatePendapatan.text = "Terakhir update : $lastUpdatePendapatan"
                         tvTerakhirUpdatePengeluaran.text = "Terakhir update : $lastUpdatePengeluaran"
                     }

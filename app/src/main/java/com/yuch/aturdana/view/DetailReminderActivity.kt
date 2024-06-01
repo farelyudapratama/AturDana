@@ -118,7 +118,7 @@ class DetailReminderActivity : AppCompatActivity() {
                 val reminder = snapshot.getValue(ReminderModel::class.java)
                 reminder?.let {
                     binding.tvDesc.text = it.reminderDesc
-                    binding.tvJumlah.text = it.reminderAmount
+                    binding.tvJumlah.text = it.reminderAmount?.toDoubleOrNull()?.toCurrencyFormat()
                     binding.tvDate.text = it.reminderDate
                 }
             }

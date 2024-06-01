@@ -4,9 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.TransactionModel
+import com.yuch.aturdana.view.setFormattedCurrency
 
 class TransactionAdapter(private val transactions: List<TransactionModel>) :
     RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
@@ -31,7 +34,14 @@ class TransactionAdapter(private val transactions: List<TransactionModel>) :
             itemView.findViewById<TextView>(R.id.tv_keterangan).text = transaction.description
             itemView.findViewById<TextView>(R.id.tv_waktu).text = transaction.time
             itemView.findViewById<TextView>(R.id.tv_kategori).text = transaction.category_id
-            itemView.findViewById<TextView>(R.id.tv_jumlah).text = transaction.amount
+
+            val amountTextView = itemView.findViewById<TextView>(R.id.tv_jumlah)
+            val amount = transaction.amount?.toDoubleOrNull() ?: 0.0
+            amountTextView.setFormattedCurrency(amount)
+
+            val cardView = itemView.findViewById<CardView>(R.id.card_view_transaksi)
+            val backgroundColor = if (transaction.type == "Pendapatan") R.color.green else R.color.red
+            cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, backgroundColor))
         }
     }
 }
