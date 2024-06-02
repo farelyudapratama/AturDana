@@ -1,17 +1,12 @@
 package com.yuch.aturdana.view
 
-import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.yuch.aturdana.data.ReminderBroadcastReceiver
 import com.yuch.aturdana.databinding.ActivityReminderBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -61,7 +56,6 @@ class ReminderActivity : AppCompatActivity() {
                 database.child("reminders").child(reminderId).setValue(reminderMap)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Reminder set successfully", Toast.LENGTH_SHORT).show()
-//                        setAlarm(reminderId, reminderDesc, calendar.timeInMillis)
                         finish()
                     }
                     .addOnFailureListener {
@@ -83,21 +77,5 @@ class ReminderActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val currentDate = dateFormat.format(calendar.time)
         binding.reminderDueDate.text = currentDate
-    }
-    private fun setAlarm(reminderId: String, description: String, timeInMillis: Long) {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, ReminderBroadcastReceiver::class.java).apply {
-            putExtra("description", description)
-            putExtra("reminderId", reminderId)
-            putExtra("notification_id", reminderId.hashCode())
-        }
-        val pendingIntent = PendingIntent.getBroadcast(this, reminderId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-//        try {
-//            alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeInMillis, pendingIntent)
-//        } catch (e: SecurityException) {
-//            // Handle SecurityException (permission denied)
-//            Log.e("ReminderCheckService", "Permission denied for scheduling exact alarm", e)
-//        }
     }
 }

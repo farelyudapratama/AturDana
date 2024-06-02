@@ -34,6 +34,8 @@ class ReminderCheckService : Service() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
 
+        startForegroundService()
+
         // Lakukan pemeriksaan status pengingat
         checkReminders()
 
@@ -42,7 +44,28 @@ class ReminderCheckService : Service() {
 
         return START_STICKY
     }
+    private fun startForegroundService() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "REMINDER_CHANNEL",
+                "Reminder Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(this, "REMINDER_CHANNEL")
+            .setContentTitle("Reminder Service")
+            .setContentText("Service is running")
+            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .build()
+
+        startForeground(1, notification)
+    }
     private fun checkReminders() {
         val userId = auth.currentUser?.uid
         val todayDate = getCurrentDate()
@@ -56,9 +79,15 @@ class ReminderCheckService : Service() {
                     for (reminderSnapshot in snapshot.children) {
                         val reminder = reminderSnapshot.getValue(ReminderModel::class.java)
                         Log.d("ReminderCheckService", "Reminder: $reminder")
-                        if (reminder != null && reminder.reminderDate!! >= todayDate && reminder.status != "selesai") {
-                            // Jika pengingat belum selesai dan hari tenggatnya adalah hari ini, tampilkan notifikasi
-                            showNotification(reminder)
+//                        if (reminder != null && reminder.reminderDate!! >= todayDate && reminder.status != "selesai") {
+//                            // Jika pengingat belum selesai dan hari tenggatnya adalah hari ini, tampilkan notifikasi
+//                            showNotification(reminder)
+//                        }
+                        if (reminder?.reminderDate != null && reminder.status != "selesai") {
+                            if (isDateTodayOrPast(reminder.reminderDate, todayDate)) {
+                                // Jika pengingat belum selesai dan hari tenggatnya adalah hari ini atau sudah lewat, tampilkan notifikasi
+                                showNotification(reminder)
+                            }
                         }
                     }
                 }
@@ -69,7 +98,17 @@ class ReminderCheckService : Service() {
             })
         }
     }
-
+    private fun isDateTodayOrPast(reminderDate: String, todayDate: String): Boolean {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return try {
+            val reminderDateParsed = dateFormat.parse(reminderDate)
+            val todayDateParsed = dateFormat.parse(todayDate)
+            reminderDateParsed != null && todayDateParsed != null && reminderDateParsed <= todayDateParsed
+        } catch (e: Exception) {
+            Log.e("ReminderCheckService", "Error parsing dates", e)
+            false
+        }
+    }
     private fun getCurrentDate(): String {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -101,6 +140,7 @@ class ReminderCheckService : Service() {
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+            .setOngoing(true)
             .build()
 
         notificationManager.notify(reminder.reminderId.hashCode(), notification)

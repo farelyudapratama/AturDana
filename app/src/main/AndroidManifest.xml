@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -19,7 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AturDana"
         tools:targetApi="31">
-
+        <activity
+            android:name=".view.BudgetActivity"
+            android:exported="false" />
         <!-- Activities -->
         <activity
             android:name=".view.DetailReminderActivity"
@@ -44,23 +45,19 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".view.main.MainActivity"
-            android:exported="false" />
-
-        <!-- Broadcast Receiver -->
-        <receiver android:name=".data.ReminderBroadcastReceiver" />
-
-        <!-- Service -->
+            android:exported="false" /> <!-- Broadcast Receiver -->
+        <receiver android:name=".data.ReminderBroadcastReceiver" /> <!-- Service -->
         <service
             android:name=".data.ReminderCheckService"
             android:enabled="true"
-            android:foregroundServiceType="dataSync"
-            android:exported="false" />
-
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>
