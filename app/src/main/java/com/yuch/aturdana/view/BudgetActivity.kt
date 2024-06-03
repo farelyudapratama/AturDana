@@ -1,12 +1,8 @@
 package com.yuch.aturdana.view
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,51 +30,27 @@ class BudgetActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance().reference
 
         updateKategori()
-        setCurrentMonth()
+
+        val months = arrayOf(
+            "Pilih Bulan", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        )
+        val monthAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, months)
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerMonth.adapter = monthAdapter
+        binding.spinnerMonth.setSelection(0)
 
         binding.apply {
             buttonTambahKategori.setOnClickListener {
                 showAddCategoryDialog()
             }
-            tvPilihBulan.setOnClickListener {
-                showMonthPickerDialog()
+            buttonSimpan.setOnClickListener {
+                saveBudget()
             }
         }
     }
 
-    private fun setCurrentMonth() {
-        val monthYearFormat = "MMMM yyyy"
-        val currentMonthYear = java.text.SimpleDateFormat(monthYearFormat, java.util.Locale("id", "ID")).format(calendar.time)
-        Log.d("TAG", "setCurrentMonth: $currentMonthYear")
-        binding.tvPilihBulan.text = currentMonthYear
-    }
-
     private fun showMonthPickerDialog() {
-        val monthsYearPicker = DatePickerDialog(
-            this,
-            { _, year, month, _ ->
-                calendar.set(year, month)
-                setCurrentMonth()
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-
-        // Hide the day spinner
-        try {
-            val datePickerField = monthsYearPicker.javaClass.getDeclaredField("mDatePicker")
-            datePickerField.isAccessible = true
-            val datePicker = datePickerField.get(monthsYearPicker) as DatePicker
-            val daySpinnerField = datePicker.javaClass.getDeclaredField("mDaySpinner")
-            daySpinnerField.isAccessible = true
-            val daySpinner = daySpinnerField.get(datePicker) as View
-            daySpinner.visibility = View.GONE
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        monthsYearPicker.show()
     }
 
     private fun showAddCategoryDialog() {
@@ -150,6 +122,40 @@ class BudgetActivity : AppCompatActivity() {
                         TODO("Not yet implemented")
                     }
                 })
+        }
+    }
+
+    private fun saveBudget() {
+        val category = binding.spinnerKategori.selectedItem.toString()
+        val amount = binding.etBudget.text.toString()
+        val month = binding.spinnerMonth.selectedItemPosition.toString()
+        val year = binding.editTextYear.text.toString()
+
+        if (category.isEmpty() || amount.isEmpty() || year.isEmpty() || month == "0") {
+            Toast.makeText(this, "Kategori, jumlah, bulan, dan tahun harus valid", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val budgetId = database.child("budgets").push().key
+            if (budgetId != null) {
+                val budget  = mapOf(
+                    "category_id" to category,
+                    "amount" to amount,
+                    "month" to month,
+                    "year" to year,
+                    "user_id" to userId
+                )
+                database.child("budgets").child(budgetId).setValue(budget)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Budget berhasil disimpan", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Gagal menyimpan budget", Toast.LENGTH_SHORT).show()
+                    }
+            }
         }
     }
 }

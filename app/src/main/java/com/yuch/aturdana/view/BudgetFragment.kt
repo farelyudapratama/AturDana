@@ -2,12 +2,21 @@ package com.yuch.aturdana.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.yuch.aturdana.R
+import com.yuch.aturdana.data.BudgetStatusAdapter
+import com.yuch.aturdana.data.pref.BudgetModel
+import com.yuch.aturdana.data.pref.BudgetStatusModel
+import com.yuch.aturdana.data.pref.TransactionModel
 import com.yuch.aturdana.databinding.FragmentBudgetBinding
 
 class BudgetFragment : Fragment(R.layout.fragment_budget) {
@@ -25,5 +34,111 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
             val intent = Intent(requireContext(), BudgetActivity::class.java)
             startActivity(intent)
         }
+
+        getBudget()
+    }
+
+    private fun getBudget(){
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val budgetRef = database.child("budgets")
+            val query = budgetRef.orderByChild("user_id").equalTo(userId)
+
+            query.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!isAdded || context == null) return
+
+                    val budgetList = mutableListOf<BudgetModel>()
+                    for (budgetSnapshot in snapshot.children) {
+                        val budget = budgetSnapshot.getValue(BudgetModel::class.java)
+                        if (budget != null) {
+                            budgetList.add(budget)
+                        }
+                    }
+                    getTransaction(budgetList)
+//                    displayBudgetList(budgetList)
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+        }
+    }
+//    private fun displayBudgetList(budgetList: List<BudgetModel>) {
+//        // Inisialisasi RecyclerView dan adapter
+//        val recyclerView = _binding.recyclerViewBudgets
+//        val adapter = BudgetAdapter(budgetList)
+//        recyclerView.adapter = adapter
+//        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+//    }
+
+    private fun getTransaction(budgetList: MutableList<BudgetModel>) {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val transactionRef = database.child("transaction")
+            val query = transactionRef.orderByChild("user_id").equalTo(userId)
+            query.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!isAdded || context == null) return
+                    val transactionList = mutableListOf<TransactionModel>()
+                    for (transactionSnapshot in snapshot.children) {
+                        val transaction = transactionSnapshot.getValue(TransactionModel::class.java)
+                        if (transaction != null) {
+                            transactionList.add(transaction)
+                        }
+                    }
+                    processBudgetAndTransaction(budgetList,transactionList)
+                }
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+        }
+    }
+
+    private fun processBudgetAndTransaction(budgetList: MutableList<BudgetModel>, transactionList: MutableList<TransactionModel>) {
+        val budgetStatusList = mutableListOf<BudgetStatusModel>()
+        for (budget in budgetList) {
+            // Menghitung total pengeluaran untuk kategori yang sesuai dengan anggaran
+            val totalExpenses = transactionList
+                .filter { it.category_id == budget.category_id }
+                .sumOf { it.amountAsDouble }
+
+            Log.d("BudgetFragment", "Total pengeluaran: $totalExpenses")
+
+            val budgetAmount = budget.amountAsDouble
+
+            val remainingBudget = budgetAmount - totalExpenses
+            Log.d("BudgetFragment", "Sisa anggaran: $remainingBudget")
+
+            val isOverBudget = totalExpenses > budgetAmount
+            val overBudgetAmount = if (isOverBudget) totalExpenses - budgetAmount else 0.0
+
+            val budgetStatus = budget.category_id?.let {
+                BudgetStatusModel(
+                    categoryId = it,
+                    budgetAmount = budgetAmount,
+                    totalExpenses = totalExpenses,
+                    remainingBudget = remainingBudget,
+                    isOverBudget = isOverBudget,
+                    overBudgetAmount = overBudgetAmount
+                )
+            }
+
+            if (budgetStatus != null) {
+                budgetStatusList.add(budgetStatus)
+            }
+        }
+
+        displayBudgetStatusList(budgetStatusList)
+    }
+
+    private fun displayBudgetStatusList(budgetStatusList: List<BudgetStatusModel>) {
+        val recyclerView = _binding.recyclerViewBudgets
+        val adapter = BudgetStatusAdapter(budgetStatusList)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 }

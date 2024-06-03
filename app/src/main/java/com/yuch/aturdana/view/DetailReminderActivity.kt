@@ -80,7 +80,7 @@ class DetailReminderActivity : AppCompatActivity() {
                                 "transactionId" to transactionId,
                                 "description" to reminder.reminderDesc,
                                 "amount" to reminder.reminderAmount,
-                                "category_id" to "tagihan",
+                                "category_id" to "Tagihan",
                                 "date" to reminder.reminderDate,
                                 "time" to time
                             )

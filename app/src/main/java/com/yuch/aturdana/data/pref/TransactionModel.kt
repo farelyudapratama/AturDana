@@ -9,4 +9,8 @@ data class TransactionModel(
     val time: String? = "",
     val type: String? = "",
     val userId: String? = ""
-)
+){
+    // Convenience method to get amount as Double
+    val amountAsDouble: Double
+        get() = amount?.toDoubleOrNull() ?: 0.0
+}
