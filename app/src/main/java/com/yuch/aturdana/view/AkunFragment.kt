@@ -1,6 +1,7 @@
 package com.yuch.aturdana.view
 
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -24,6 +26,8 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
     private var _binding: FragmentAkunBinding? = null
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private lateinit var switchNotification: SwitchMaterial
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,6 +67,36 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
             })
         }
         setupAction()
+
+//        Log.d("ReminderCheckService", "Notification Enabled: $isNotificationEnabled")
+
+        _binding?.let { binding ->
+            switchNotification = binding.notificationPreference
+            // Setup listener and get saved preference
+            switchNotification.setOnCheckedChangeListener { _, isChecked ->
+                // Save notification preference
+                saveNotificationPreference(isChecked)
+                if (isChecked) {
+                    binding.notificationPreference.text = "Aktifkan Notifikasi"
+                } else {
+                    binding.notificationPreference.text = "Matikan Notifikasi"
+                }
+            }
+            switchNotification.isChecked = getNotificationPreference()
+        }
+
+    }
+
+    private fun saveNotificationPreference(isChecked: Boolean) {
+        val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("notification_preference", isChecked)
+        editor.apply()
+    }
+
+    private fun getNotificationPreference(): Boolean {
+        val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("notification_preference", true)
     }
 
     private fun setupAction() {

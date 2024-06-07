@@ -54,6 +54,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     for (data in dataSnapshot.children) {
                         val transaction = data.getValue(TransactionModel::class.java)
                         if (transaction != null) {
+                            transaction.transactionId = data.key
                             transactions.add(transaction)
                         }
                     }
@@ -126,7 +127,5 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    companion object {
-
-    }
+    companion object
 }

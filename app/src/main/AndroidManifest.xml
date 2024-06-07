@@ -19,9 +19,11 @@
         android:theme="@style/Theme.AturDana"
         tools:targetApi="31">
         <activity
-            android:name=".view.BudgetActivity"
+            android:name=".view.DetailTransaksiActivity"
             android:exported="false" />
-        <!-- Activities -->
+        <activity
+            android:name=".view.BudgetActivity"
+            android:exported="false" /> <!-- Activities -->
         <activity
             android:name=".view.DetailReminderActivity"
             android:exported="false" />

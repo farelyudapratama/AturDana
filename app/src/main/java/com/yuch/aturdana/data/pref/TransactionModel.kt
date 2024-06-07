@@ -1,7 +1,7 @@
 package com.yuch.aturdana.data.pref
 
 data class TransactionModel(
-    val id: String? = "",
+    var transactionId: String? = "",
     val amount: String? = "",
     val category_id: String? = "",
     val date: String? = "",

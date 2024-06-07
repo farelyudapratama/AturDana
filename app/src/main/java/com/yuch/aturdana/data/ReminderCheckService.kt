@@ -36,36 +36,48 @@ class ReminderCheckService : Service() {
 
         startForegroundService()
 
-        // Lakukan pemeriksaan status pengingat
         checkReminders()
 
-        // Jadwalkan pemeriksaan berulang setiap 30 menit
         scheduleNextCheck()
 
         return START_STICKY
     }
-    private fun startForegroundService() {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "REMINDER_CHANNEL",
-                "Reminder Notifications",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notification = NotificationCompat.Builder(this, "REMINDER_CHANNEL")
-            .setContentTitle("Reminder Service")
-            .setContentText("Service is running")
-            .setSmallIcon(R.drawable.baseline_notifications_24)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setOngoing(true)
-            .build()
-
-        startForeground(1, notification)
+    private fun getNotificationPreference(): Boolean {
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("notification_preference", true)
     }
+
+    private fun startForegroundService() {
+        val isNotificationEnabled = getNotificationPreference()
+        Log.d("ReminderCheckService", "Notification Enabled: $isNotificationEnabled")
+
+        if (isNotificationEnabled) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    "REMINDER_CHANNEL",
+                    "Reminder Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+                notificationManager.createNotificationChannel(channel)
+            }
+
+            val notification = NotificationCompat.Builder(this, "REMINDER_CHANNEL")
+                .setContentTitle("Reminder Service")
+                .setContentText("Service is running")
+                .setSmallIcon(R.drawable.baseline_notifications_24)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build()
+
+            // Panggil startForeground() di sini
+            startForeground(1, notification)
+        } else {
+            // Jika notifikasi dinonaktifkan, panggil stopForeground() untuk menghapus notifikasi
+            stopForeground(true)
+        }
+    }
+
     private fun checkReminders() {
         val userId = auth.currentUser?.uid
         val todayDate = getCurrentDate()
@@ -83,9 +95,10 @@ class ReminderCheckService : Service() {
 //                            // Jika pengingat belum selesai dan hari tenggatnya adalah hari ini, tampilkan notifikasi
 //                            showNotification(reminder)
 //                        }
-                        if (reminder?.reminderDate != null && reminder.status != "selesai") {
+                        val isNotificationEnabled = getNotificationPreference()
+                        if (isNotificationEnabled && reminder?.reminderDate != null && reminder.status != "selesai") {
                             if (isDateTodayOrPast(reminder.reminderDate, todayDate)) {
-                                // Jika pengingat belum selesai dan hari tenggatnya adalah hari ini atau sudah lewat, tampilkan notifikasi
+                                // If the reminder is not completed and the deadline is today or passed, show notification
                                 showNotification(reminder)
                             }
                         }

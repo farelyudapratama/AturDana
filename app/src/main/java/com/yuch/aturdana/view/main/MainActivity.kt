@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         val serviceIntent = Intent(this, ReminderCheckService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent)
+            startService(serviceIntent)
         } else {
             startService(serviceIntent)
         }

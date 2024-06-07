@@ -1,5 +1,7 @@
 package com.yuch.aturdana.data
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.TransactionModel
+import com.yuch.aturdana.view.DetailTransaksiActivity
 import com.yuch.aturdana.view.setFormattedCurrency
 
 class TransactionAdapter(private val transactions: List<TransactionModel>) :
@@ -28,7 +31,11 @@ class TransactionAdapter(private val transactions: List<TransactionModel>) :
         return transactions.size
     }
 
-    class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        private val context: Context = itemView.context
+        init {
+            itemView.setOnClickListener(this)
+        }
         fun bind(transaction: TransactionModel) {
             itemView.findViewById<TextView>(R.id.tv_tanggal).text = transaction.date
             itemView.findViewById<TextView>(R.id.tv_keterangan).text = transaction.description
@@ -42,6 +49,17 @@ class TransactionAdapter(private val transactions: List<TransactionModel>) :
             val cardView = itemView.findViewById<CardView>(R.id.card_view_transaksi)
             val backgroundColor = if (transaction.type == "Pendapatan") R.color.green else R.color.red
             cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, backgroundColor))
+        }
+
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION){
+                val transaction = transactions[position]
+                val intent = Intent(context, DetailTransaksiActivity::class.java).apply {
+                    putExtra("key", transaction.transactionId)
+                }
+                context.startActivity(intent)
+            }
         }
     }
 }
