@@ -2,6 +2,7 @@ package com.yuch.aturdana.view
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
@@ -11,6 +12,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.yuch.aturdana.R
+import com.yuch.aturdana.data.pref.BudgetStatusModel
 import com.yuch.aturdana.data.pref.TransactionModel
 import com.yuch.aturdana.databinding.ActivityDetailTransaksiBinding
 
@@ -32,15 +34,35 @@ class DetailTransaksiActivity : AppCompatActivity() {
 
         fetchTransactionDetails(transactionId)
         binding.btnHapus.setOnClickListener {
-            database.child("transaction").child(transactionId).removeValue()
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Berhasil menghapus transaksi", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-                .addOnFailureListener {
-                    Toast.makeText(this, "Gagal menghapus transaksi", Toast.LENGTH_SHORT).show()
-                }
+            showDeleteConfirmationDialog()
         }
+    }
+
+    private fun showDeleteConfirmationDialog() {
+        // Menampilkan dialog konfirmasi penghapusan
+        AlertDialog.Builder(this)
+            .setTitle("Konfirmasi Penghapusan")
+            .setMessage("Apakah Anda yakin ingin menghapus transaksi ini?")
+            .setPositiveButton("Ya") { dialog, _ ->
+                deleteTransaction()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    private fun deleteTransaction() {
+        database.child("transaction").child(transactionId).removeValue()
+            .addOnSuccessListener {
+                Toast.makeText(this, "Berhasil menghapus transaksi", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Gagal menghapus transaksi", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun fetchTransactionDetails(transactionId: String) {

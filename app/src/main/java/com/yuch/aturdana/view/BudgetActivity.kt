@@ -127,7 +127,7 @@ class BudgetActivity : AppCompatActivity() {
 
     private fun saveBudget() {
         val category = binding.spinnerKategori.selectedItem.toString()
-        val amount = binding.etBudget.text.toString()
+        val amount = binding.etBudget.getCleanDoubleValue().toString()
         val month = binding.spinnerMonth.selectedItemPosition.toString()
         val year = binding.editTextYear.text.toString()
 

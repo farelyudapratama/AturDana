@@ -60,7 +60,7 @@
 
             </LinearLayout>
 
-            <EditText
+            <com.yuch.aturdana.view.MoneyEditText
                 android:id="@+id/edittext_jumlah"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

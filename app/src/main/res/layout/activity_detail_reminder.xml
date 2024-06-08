@@ -60,7 +60,7 @@
             android:textColor="#000000"
             tools:layout_editor_absoluteX="20dp" />
 
-        <EditText
+        <com.yuch.aturdana.view.MoneyEditText
             android:id="@+id/et_jumlah"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

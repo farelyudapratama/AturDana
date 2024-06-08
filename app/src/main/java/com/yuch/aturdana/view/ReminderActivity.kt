@@ -38,7 +38,7 @@ class ReminderActivity : AppCompatActivity() {
 
     private fun sendReminder() {
         val reminderDesc = binding.etReminderDescription.text.toString()
-        val reminderAmount = binding.etReminderAmount.text.toString()
+        val reminderAmount = binding.etReminderAmount.getCleanDoubleValue().toString()
         val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val reminderDate = formatDate.format(calendar.time)
 

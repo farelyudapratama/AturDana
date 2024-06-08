@@ -3,6 +3,7 @@ package com.yuch.aturdana.data
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -10,8 +11,10 @@ import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.BudgetStatusModel
 import com.yuch.aturdana.view.setFormattedCurrency
 
-class BudgetStatusAdapter(private val budgetStatusList: List<BudgetStatusModel>) :
-    RecyclerView.Adapter<BudgetStatusAdapter.BudgetStatusViewHolder>() {
+class BudgetStatusAdapter(
+    private val budgetStatusList: List<BudgetStatusModel>,
+    private val onDeleteClick: (BudgetStatusModel) -> Unit
+) : RecyclerView.Adapter<BudgetStatusAdapter.BudgetStatusViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetStatusViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_budget, parent, false)
@@ -27,15 +30,27 @@ class BudgetStatusAdapter(private val budgetStatusList: List<BudgetStatusModel>)
         return budgetStatusList.size
     }
 
-    class BudgetStatusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class BudgetStatusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val categoryTextView: TextView = itemView.findViewById(R.id.textViewCategory)
-//        private val budgetTextView: TextView = itemView.findViewById(R.id.textViewBudget)
         private val budgetAmountView = itemView.findViewById<TextView>(R.id.textViewBudget)
         private val usedTextView: TextView = itemView.findViewById(R.id.textViewUsed)
         private val tvInfoRemainingOrOver: TextView = itemView.findViewById(R.id.tvInfoRemainingOrOver)
         private val remainingTextView: TextView = itemView.findViewById(R.id.textViewRemaining)
+        private val dateTextView: TextView = itemView.findViewById(R.id.textViewDate)
+        private val deleteButton: Button = itemView.findViewById(R.id.ibDelete)
 
         fun bind(budgetStatus: BudgetStatusModel) {
+            val months = arrayOf(
+                "", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+            )
+
+            val monthName = budgetStatus.month.toIntOrNull()?.let { months[it] }
+            val year = budgetStatus.year
+            val formattedDate = "$monthName $year"
+
+            dateTextView.text = formattedDate
+
             categoryTextView.text = budgetStatus.categoryId
             val budgetAmount = budgetStatus.budgetAmount
             budgetAmountView.setFormattedCurrency(budgetAmount)
@@ -54,6 +69,10 @@ class BudgetStatusAdapter(private val budgetStatusList: List<BudgetStatusModel>)
                 remainingTextView.setFormattedCurrency(remainingBudget)
                 tvInfoRemainingOrOver.setTextColor(ContextCompat.getColor(itemView.context, R.color.green))
                 remainingTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.green))
+            }
+
+            deleteButton.setOnClickListener {
+                onDeleteClick(budgetStatus)
             }
         }
     }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -43,7 +44,7 @@ class DetailReminderActivity : AppCompatActivity() {
             addTransactionAndFinish(reminderId)
         }
         binding.btnHapus.setOnClickListener {
-            deleteReminder(reminderId)
+            showDeleteConfirmationDialog(reminderId)
         }
 
         // Tombol Edit
@@ -125,7 +126,7 @@ class DetailReminderActivity : AppCompatActivity() {
         // Perbarui data pengingat di Firebase Realtime Database
         // Anda dapat menggunakan database.update() untuk memperbarui data yang ada
         val desc = binding.etDesc.text.toString().trim()
-        val jumlah = binding.etJumlah.text.toString().trim()
+        val jumlah = binding.etJumlah.getCleanDoubleValue().toString().trim()
         val date = binding.etDate.text.toString().trim()
 
         val reminderUpdate = mapOf(
@@ -144,6 +145,22 @@ class DetailReminderActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Gagal memperbarui pengingat", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun showDeleteConfirmationDialog(reminderId: String) {
+        // Menampilkan dialog konfirmasi penghapusan
+        AlertDialog.Builder(this)
+            .setTitle("Konfirmasi Penghapusan")
+            .setMessage("Apakah Anda yakin ingin menghapus pengingat ini?")
+            .setPositiveButton("Ya") { dialog, _ ->
+                deleteReminder(reminderId)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     private fun deleteReminder(reminderId: String) {

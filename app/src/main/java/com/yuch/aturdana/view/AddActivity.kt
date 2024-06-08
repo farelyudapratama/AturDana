@@ -194,7 +194,7 @@ class AddActivity : AppCompatActivity() {
     private fun saveTransaction() {
         val type = if (binding.buttonPendapatan.isEnabled) "Pengeluaran" else "Pendapatan"
         val category = binding.spinnerKategori.selectedItem.toString()
-        val amount = binding.edittextJumlah.text.toString()
+        val amount = binding.edittextJumlah.getCleanDoubleValue().toString()
         val note = binding.edittextCatatan.text.toString()
         val date = binding.datepickerTanggal.text.toString()
         val time = binding.timepickerWaktu.text.toString()

@@ -6,5 +6,7 @@ data class BudgetStatusModel(
     val totalExpenses: Double,
     val remainingBudget: Double,
     val isOverBudget: Boolean,
-    val overBudgetAmount: Double
+    val overBudgetAmount: Double,
+    val month: String,
+    val year: String
 )

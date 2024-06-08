@@ -54,7 +54,6 @@
         <activity
             android:name=".view.main.MainActivity"
             android:exported="false" /> <!-- Broadcast Receiver -->
-        <receiver android:name=".data.ReminderBroadcastReceiver" /> <!-- Service -->
         <service
             android:name=".data.ReminderCheckService"
             android:enabled="true"

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -18,6 +19,9 @@ import com.yuch.aturdana.data.pref.BudgetModel
 import com.yuch.aturdana.data.pref.BudgetStatusModel
 import com.yuch.aturdana.data.pref.TransactionModel
 import com.yuch.aturdana.databinding.FragmentBudgetBinding
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class BudgetFragment : Fragment(R.layout.fragment_budget) {
     private lateinit var _binding: FragmentBudgetBinding
@@ -66,14 +70,6 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
             })
         }
     }
-//    private fun displayBudgetList(budgetList: List<BudgetModel>) {
-//        // Inisialisasi RecyclerView dan adapter
-//        val recyclerView = _binding.recyclerViewBudgets
-//        val adapter = BudgetAdapter(budgetList)
-//        recyclerView.adapter = adapter
-//        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//    }
-
     private fun getTransaction(budgetList: MutableList<BudgetModel>) {
         val userId = auth.currentUser?.uid
         if (userId != null) {
@@ -86,7 +82,17 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
                     for (transactionSnapshot in snapshot.children) {
                         val transaction = transactionSnapshot.getValue(TransactionModel::class.java)
                         if (transaction != null) {
-                            transactionList.add(transaction)
+                            val date = transaction.date
+                            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            val parsedDate = dateFormat.parse(date.toString())
+                            if (parsedDate != null) {
+                                val cal = Calendar.getInstance().apply { time = parsedDate }
+                                val transMonth = (cal.get(Calendar.MONTH) + 1).toString()
+                                val transYear = cal.get(Calendar.YEAR).toString()
+                                transaction.month = transMonth
+                                transaction.year = transYear
+                                transactionList.add(transaction)
+                            }
                         }
                     }
                     processBudgetAndTransaction(budgetList,transactionList)
@@ -103,7 +109,7 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
         for (budget in budgetList) {
             // Menghitung total pengeluaran untuk kategori yang sesuai dengan anggaran
             val totalExpenses = transactionList
-                .filter { it.category_id == budget.category_id }
+                .filter { it.category_id == budget.category_id  && it.month == budget.month && it.year == budget.year }
                 .sumOf { it.amountAsDouble }
 
             Log.d("BudgetFragment", "Total pengeluaran: $totalExpenses")
@@ -116,6 +122,9 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
             val isOverBudget = totalExpenses > budgetAmount
             val overBudgetAmount = if (isOverBudget) totalExpenses - budgetAmount else 0.0
 
+            val month = budget.month
+            val year = budget.year
+
             val budgetStatus = budget.category_id?.let {
                 BudgetStatusModel(
                     categoryId = it,
@@ -123,7 +132,9 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
                     totalExpenses = totalExpenses,
                     remainingBudget = remainingBudget,
                     isOverBudget = isOverBudget,
-                    overBudgetAmount = overBudgetAmount
+                    overBudgetAmount = overBudgetAmount,
+                    month = month!!,
+                    year = year!!
                 )
             }
 
@@ -132,13 +143,70 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
             }
         }
 
-        displayBudgetStatusList(budgetStatusList)
+        val sortedBudgetStatusList = budgetStatusList.sortedByDescending {
+            val yearInt = it.year.toIntOrNull() ?: 0
+            val monthInt = it.month.toIntOrNull() ?: 0
+            yearInt * 100 + monthInt
+        }
+
+        displayBudgetStatusList(sortedBudgetStatusList)
     }
 
     private fun displayBudgetStatusList(budgetStatusList: List<BudgetStatusModel>) {
         val recyclerView = _binding.recyclerViewBudgets
-        val adapter = BudgetStatusAdapter(budgetStatusList)
+        val adapter = BudgetStatusAdapter(budgetStatusList) { budgetStatus ->
+            showDeleteConfirmationDialog(budgetStatus)
+        }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun showDeleteConfirmationDialog(budgetStatus: BudgetStatusModel) {
+        val categoryId = budgetStatus.categoryId
+        val months = arrayOf(
+            "", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        )
+
+        val monthName = budgetStatus.month.toIntOrNull()?.let { months[it] }
+        val year = budgetStatus.year
+        val formatted = "$monthName $year"
+
+        // Menampilkan dialog konfirmasi penghapusan
+        AlertDialog.Builder(requireContext())
+            .setTitle("Konfirmasi Penghapusan")
+            .setMessage("Apakah Anda yakin ingin menghapus anggaran dari $categoryId pada $formatted?")
+            .setPositiveButton("Ya") { dialog, _ ->
+                deleteBudget(budgetStatus)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+    private fun deleteBudget(budgetStatus: BudgetStatusModel) {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val budgetRef = database.child("budgets")
+            val query = budgetRef.orderByChild("user_id").equalTo(userId)
+
+            query.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (budgetSnapshot in snapshot.children) {
+                        val budget = budgetSnapshot.getValue(BudgetModel::class.java)
+                        if (budget != null && budget.category_id == budgetStatus.categoryId && budget.month == budgetStatus.month && budget.year == budgetStatus.year) {
+                            budgetSnapshot.ref.removeValue()
+                            break
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+        }
     }
 }
