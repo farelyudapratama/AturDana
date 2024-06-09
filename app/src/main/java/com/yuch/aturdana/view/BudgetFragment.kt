@@ -146,7 +146,8 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
         val sortedBudgetStatusList = budgetStatusList.sortedByDescending {
             val yearInt = it.year.toIntOrNull() ?: 0
             val monthInt = it.month.toIntOrNull() ?: 0
-            yearInt * 100 + monthInt
+            val monthString = if (monthInt < 10) "0$monthInt" else monthInt.toString()
+            yearInt * 100 + monthString.toInt()
         }
 
         displayBudgetStatusList(sortedBudgetStatusList)

@@ -19,6 +19,12 @@
         android:theme="@style/Theme.AturDana"
         tools:targetApi="31">
         <activity
+            android:name=".view.ExpenseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.IncomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.DetailTransaksiActivity"
             android:exported="false" />
         <activity

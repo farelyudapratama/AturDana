@@ -1,5 +1,6 @@
 package com.yuch.aturdana.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,6 +16,7 @@ import com.yuch.aturdana.R
 import com.yuch.aturdana.data.TransactionAdapter
 import com.yuch.aturdana.data.pref.TransactionModel
 import com.yuch.aturdana.databinding.FragmentHomeBinding
+import java.util.Calendar
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var _binding: FragmentHomeBinding
@@ -30,6 +32,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         onViews()
         displayTransactions()
+
+        _binding.apply {
+            cardPendapatan.setOnClickListener {
+                val intent = Intent(requireContext(), IncomeActivity::class.java)
+                startActivity(intent)
+            }
+            cardPengeluaran.setOnClickListener {
+                val intent = Intent(requireContext(), ExpenseActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
 //        setupInsets()
     }
 //    private fun setupInsets() {
@@ -60,7 +74,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     }
 
                     // Sort transactions by date
-                    transactions.sortByDescending { it.date }
+                    transactions.sortByDescending {
+                        val parts = it.date!!.split("/")
+                        val year = parts[2].toInt()
+                        val month = parts[1].toInt()
+                        val day = parts[0].toInt()
+                        year * 10000 + month * 100 + day
+                    }
 
                     // Set up RecyclerView and attach adapter
                     val adapter = TransactionAdapter(transactions)
@@ -90,8 +110,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     var lastUpdatePendapatan = ""
                     var lastUpdatePengeluaran = ""
 
-//                    var lastUpdate = ""
-//                    val totalSaldo = totalPendapatan - totalPengeluaran
+                    val calendar = Calendar.getInstance()
+                    val currentMonth = calendar.get(Calendar.MONTH) + 1 // Januari = 0, jadi ditambah 1
+                    val currentYear = calendar.get(Calendar.YEAR)
 
                     for (data in dataSnapshot.children) {
                         val type = data.child("type").getValue(String::class.java)
@@ -101,13 +122,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                         if (type != null && amount != null && date != null && time != null){
                             val amountDouble = amount.toDoubleOrNull() ?: 0.0
-                            if (type == "Pendapatan") {
-                                totalPendapatan += amountDouble
-                                Log.d("HomeFragmentIfStatement", "Total Pendapatan: $totalPendapatan")
-                                lastUpdatePendapatan = "$date $time"
-                            } else if (type == "Pengeluaran") {
-                                totalPengeluaran += amountDouble
-                                lastUpdatePengeluaran = "$date $time"
+                            val dateParts = date.split("/")
+                            if (dateParts.size == 3) {
+                                val transDay = dateParts[0].toIntOrNull()
+                                val transMonth = dateParts[1].toIntOrNull()
+                                val transYear = dateParts[2].toIntOrNull()
+
+                                if (transMonth == currentMonth && transYear == currentYear) {
+                                    if (type == "Pendapatan") {
+                                        totalPendapatan += amountDouble
+                                        Log.d("HomeFragmentIfStatement", "Total Pendapatan: $totalPendapatan")
+                                        lastUpdatePendapatan = "$date $time"
+                                    } else if (type == "Pengeluaran") {
+                                        totalPengeluaran += amountDouble
+                                        lastUpdatePengeluaran = "$date $time"
+                                    }
+                                }
                             }
                         }
                     }

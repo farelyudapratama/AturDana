@@ -51,7 +51,13 @@ class ReminderFragment : Fragment(R.layout.fragment_reminder) {
                         }
                     }
 
-                    reminderList.sortByDescending { it.reminderDate }
+                    reminderList.sortByDescending {
+                        val parts = it.reminderDate!!.split("/")
+                        val year = parts[2].toInt()
+                        val month = parts[1].toInt()
+                        val day = parts[0].toInt()
+                        year * 10000 + month * 100 + day
+                    }
                     val adapter = ReminderAdapter(reminderList)
                     _binding.reminderList.adapter = adapter
                     _binding.reminderList.layoutManager = LinearLayoutManager(requireContext())
