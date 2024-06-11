@@ -1,10 +1,13 @@
 package com.yuch.aturdana.view
 
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -141,6 +144,12 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
             if (budgetStatus != null) {
                 budgetStatusList.add(budgetStatus)
             }
+
+            if (isOverBudget) {
+                sendNotification("Anggaran Melebihi", "Anggaran Anda untuk ${budget.category_id} melebihi.")
+            } else if (totalExpenses >= 0.8 * budgetAmount) {
+                sendNotification("Peringatan Anggaran", "Anggaran Anda untuk ${budget.category_id} sudah mencapai 80%.")
+            }
         }
 
         val sortedBudgetStatusList = budgetStatusList.sortedByDescending {
@@ -152,7 +161,17 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
 
         displayBudgetStatusList(sortedBudgetStatusList)
     }
+    private fun sendNotification(title: String, message: String) {
+        val notificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationBuilder = NotificationCompat.Builder(requireContext(), "BUDGET_NOTIFICATIONS")
+            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
 
+        notificationManager.notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
+    }
     private fun displayBudgetStatusList(budgetStatusList: List<BudgetStatusModel>) {
         val recyclerView = _binding.recyclerViewBudgets
         val adapter = BudgetStatusAdapter(budgetStatusList) { budgetStatus ->

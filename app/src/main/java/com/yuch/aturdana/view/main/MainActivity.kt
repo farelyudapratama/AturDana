@@ -1,5 +1,8 @@
 package com.yuch.aturdana.view.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -30,9 +33,22 @@ class MainActivity : AppCompatActivity() {
         } else {
             startService(serviceIntent)
         }
+        createNotificationChannels()
 
     }
-
+    private fun createNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "BUDGET_NOTIFICATIONS",
+                "Notifikasi Anggaran",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifikasi untuk pembaruan anggaran"
+            }
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+    }
     private fun setupAction() {
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
