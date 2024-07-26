@@ -1,34 +1,35 @@
 package com.yuch.aturdana.view
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.TransactionAdapter
 import com.yuch.aturdana.data.pref.TransactionModel
-import com.yuch.aturdana.databinding.ActivityExpenseBinding
+import com.yuch.aturdana.databinding.ActivitySearchTransactionBinding
+import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
-class ExpenseActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityExpenseBinding
+class SearchTransactionActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySearchTransactionBinding
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private var isIncome: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityExpenseBinding.inflate(layoutInflater)
+        binding = ActivitySearchTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isIncome = intent.getBooleanExtra("IS_INCOME", false)
+        supportActionBar?.title = if (isIncome) "Lacak Pendapatan" else "Lacak Pengeluaran"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
@@ -39,14 +40,19 @@ class ExpenseActivity : AppCompatActivity() {
             }
             tvFilterAll.setOnClickListener {
                 fetchTransactionsForAllTime()
-                binding.tvTotalExpenseTitle.text = "Total Pengeluaran Anda :"
+                binding.tvTotalTransactionTitle.text = if (isIncome) "Total Pendapatan Anda :" else "Total Pengeluaran Anda :"
             }
         }
 
-        currentMonthIncome()
+        fetchCurrentMonthTransactions()
     }
 
-    private fun currentMonthIncome() {
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    private fun fetchCurrentMonthTransactions() {
         val calendar = Calendar.getInstance()
         val currentMonthStart = calendar.apply {
             set(Calendar.DAY_OF_MONTH, 1)
@@ -68,7 +74,6 @@ class ExpenseActivity : AppCompatActivity() {
         fetchTransactionsForDateRange(currentMonthStart, currentMonthEnd)
     }
 
-    // Fungsi untuk mengambil data transaksi untuk semua waktu
     private fun fetchTransactionsForAllTime() {
         val userId = auth.currentUser?.uid ?: return
         val transactionRef = database.child("transaction")
@@ -76,7 +81,7 @@ class ExpenseActivity : AppCompatActivity() {
 
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                var totalPengeluaran = 0.0
+                var totalTransaction = 0.0
 
                 val transactions = mutableListOf<TransactionModel>()
                 for (data in dataSnapshot.children) {
@@ -84,18 +89,24 @@ class ExpenseActivity : AppCompatActivity() {
                     val type = data.child("type").getValue(String::class.java)
                     val amount = data.child("amount").getValue(String::class.java)
                     val amountDouble = amount?.toDoubleOrNull() ?: 0.0
-                    if (type == "Pengeluaran" && amount != null && transaction != null) {
+                    if ((isIncome && type == "Pendapatan" && amount != null && transaction != null) || (!isIncome && type == "Pengeluaran" && amount != null && transaction != null)) {
                         transaction.transactionId = data.key
                         transactions.add(transaction)
-                        totalPengeluaran += amountDouble
+                        totalTransaction += amountDouble
                     }
                 }
-                val adapter = TransactionAdapter(transactions)
-                binding.rvTransaksi.adapter = adapter
-                binding.rvTransaksi.layoutManager = LinearLayoutManager(this@ExpenseActivity)
-
-                binding.tvTotalExpense.setFormattedCurrency(totalPengeluaran)
-                binding.tvTotalExpenseTitle.text = "Total Pendapatan Anda Selama Ini"
+                if (transactions.isEmpty()) {
+                    binding.tvNoTransaction.visibility = View.VISIBLE
+                    binding.rvTransaksi.visibility = View.GONE
+                } else {
+                    binding.tvNoTransaction.visibility = View.GONE
+                    binding.rvTransaksi.visibility = View.VISIBLE
+                    val adapter = TransactionAdapter(transactions)
+                    binding.rvTransaksi.adapter = adapter
+                    binding.rvTransaksi.layoutManager = LinearLayoutManager(this@SearchTransactionActivity)
+                    binding.tvTotalTransaction.setFormattedCurrency(totalTransaction)
+                    binding.tvTotalTransactionTitle.text = if (isIncome) "Total Pendapatan Keseluruhan" else "Total Pengeluaran Keseluruhan"
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -107,7 +118,7 @@ class ExpenseActivity : AppCompatActivity() {
     private fun showDateRangePicker() {
         val dateRangePicker = MaterialDatePicker.Builder
             .dateRangePicker()
-            .setTitleText("Select Date")
+            .setTitleText("Pilih Tanggal")
             .build()
 
         dateRangePicker.show(
@@ -120,9 +131,26 @@ class ExpenseActivity : AppCompatActivity() {
             val endDate = dateSelected.second
 
             if (startDate != null && endDate != null) {
-                // Do something with the selected dates
-                binding.tvDate.text = "${convertTimestampToDate(startDate)} - ${convertTimestampToDate(endDate)}"
-                fetchTransactionsForDateRange(startDate, endDate)
+                val calendar = Calendar.getInstance().apply {
+                    timeInMillis = startDate
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                val adjustedStartDate = calendar.timeInMillis
+
+                calendar.apply {
+                    timeInMillis = endDate
+                    set(Calendar.HOUR_OF_DAY, 23)
+                    set(Calendar.MINUTE, 59)
+                    set(Calendar.SECOND, 59)
+                    set(Calendar.MILLISECOND, 999)
+                }
+                val adjustedEndDate = calendar.timeInMillis
+
+                binding.tvDate.text = "${convertTimestampToDate(adjustedStartDate)} - ${convertTimestampToDate(adjustedEndDate)}"
+                fetchTransactionsForDateRange(adjustedStartDate, adjustedEndDate)
             }
         }
     }
@@ -134,32 +162,42 @@ class ExpenseActivity : AppCompatActivity() {
 
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                var totalPengeluaran = 0.0
+                var totalPendapatan = 0.0
 
                 val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
                 val transactions = mutableListOf<TransactionModel>()
+
                 for (data in dataSnapshot.children) {
                     val transaction = data.getValue(TransactionModel::class.java)
-
                     val type = data.child("type").getValue(String::class.java)
                     val amount = data.child("amount").getValue(String::class.java)
                     val date = data.child("date").getValue(String::class.java)
 
-                    if (type == "Pengeluaran" && amount != null && date != null && transaction != null) {
-                        val transactionDate = sdf.parse(date).time
-                        if (transactionDate in startDate..endDate) {
+                    Log.d("Date Check", "Transaction date: $date")
+
+                    if ((isIncome && type == "Pendapatan" && amount != null && date != null && transaction != null) ||
+                        (!isIncome && type == "Pengeluaran" && amount != null && date != null && transaction != null)) {
+                        val transactionDate = try {
+                            sdf.parse(date)?.time
+                        } catch (e: ParseException) {
+                            null
+                        }
+
+                        Log.d("Date Check", "Parsed date: $transactionDate")
+
+                        if (transactionDate != null && transactionDate in startDate..endDate) {
                             transaction.transactionId = data.key
                             transactions.add(transaction)
-                            totalPengeluaran += amount.toDouble()
+                            totalPendapatan += amount.toDouble()
                         }
                     }
                 }
+
                 val adapter = TransactionAdapter(transactions)
                 binding.rvTransaksi.adapter = adapter
-                binding.rvTransaksi.layoutManager = LinearLayoutManager(this@ExpenseActivity)
-
-                binding.tvTotalExpense.setFormattedCurrency(totalPengeluaran)
+                binding.rvTransaksi.layoutManager = LinearLayoutManager(this@SearchTransactionActivity)
+                binding.tvTotalTransaction.setFormattedCurrency(totalPendapatan)
+                binding.tvTotalTransactionTitle.text = if (isIncome) "Total Pendapatan" else "Total Pengeluaran"
             }
 
             override fun onCancelled(error: DatabaseError) {

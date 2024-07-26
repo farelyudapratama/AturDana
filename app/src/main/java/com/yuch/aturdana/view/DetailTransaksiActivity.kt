@@ -27,6 +27,9 @@ class DetailTransaksiActivity : AppCompatActivity() {
         binding = ActivityDetailTransaksiBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.title = "Detail Transaksi"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         transactionId = intent.getStringExtra("key") ?: return
 
         auth = FirebaseAuth.getInstance()
@@ -37,7 +40,10 @@ class DetailTransaksiActivity : AppCompatActivity() {
             showDeleteConfirmationDialog()
         }
     }
-
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
     private fun showDeleteConfirmationDialog() {
         // Menampilkan dialog konfirmasi penghapusan
         AlertDialog.Builder(this)

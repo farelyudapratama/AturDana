@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -32,6 +33,8 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentAkunBinding.bind(view)
+
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
@@ -77,14 +80,13 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
                 // Save notification preference
                 saveNotificationPreference(isChecked)
                 if (isChecked) {
-                    binding.notificationPreference.text = "Aktifkan Notifikasi"
-                } else {
                     binding.notificationPreference.text = "Matikan Notifikasi"
+                } else {
+                    binding.notificationPreference.text = "Aktifkan Notifikasi"
                 }
             }
             switchNotification.isChecked = getNotificationPreference()
         }
-
     }
 
     private fun saveNotificationPreference(isChecked: Boolean) {

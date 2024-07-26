@@ -26,6 +26,9 @@ class BudgetActivity : AppCompatActivity() {
         binding = ActivityBudgetBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.title = "Buat Anggaran"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
 
@@ -50,7 +53,9 @@ class BudgetActivity : AppCompatActivity() {
         }
     }
 
-    private fun showMonthPickerDialog() {
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun showAddCategoryDialog() {

@@ -34,6 +34,9 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.title = "Profil"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().getReference("users")
         storage = FirebaseStorage.getInstance().getReference("images")
@@ -92,7 +95,7 @@ class EditProfileActivity : AppCompatActivity() {
                     if (uri != null) {
                         uploadImageAndSaveData(uri!!)
                     } else {
-                        saveUserProfile(null) // Save user data without changing the avatar
+                        saveUserProfile(null)
                     }
                 }
                 .setNegativeButton("Tidak") { dialog, id ->
@@ -105,6 +108,10 @@ class EditProfileActivity : AppCompatActivity() {
         binding.btnCancel.setOnClickListener {
             finish()
         }
+    }
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
     private fun uploadImageAndSaveData(uri: Uri) {
         val currentUser = auth.currentUser
@@ -131,9 +138,9 @@ class EditProfileActivity : AppCompatActivity() {
             val username = binding.etNama.text.toString()
 
             val newUsername = if (username != originalUser.username) username else originalUser.username
-            val email = originalUser.email // Tetap gunakan email yang sudah ada
-            val newAvatarUrl = avatarUrl ?: originalUser.avatarUrl // Pastikan avatarUrl tidak null
-            val createdAt = originalUser.createdAt // Tetap gunakan createAt yang sudah ada
+            val email = originalUser.email
+            val newAvatarUrl = avatarUrl ?: originalUser.avatarUrl
+            val createdAt = originalUser.createdAt
 
             val user = UserModel(newUsername, email, newAvatarUrl, createdAt)
 

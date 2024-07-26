@@ -16,11 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Detail Transaksi"
-            android:textSize="20sp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,7 +28,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:text="Tanggal"
-                android:textColor="@color/navy_blue" />
+                style="@style/colorTextBold"
+                />
 
             <TextView
                 android:id="@+id/tv_waktu"
@@ -41,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:text="Waktu"
                 android:gravity="end"
-                android:textColor="@color/navy_blue" />
+                style="@style/colorTextBold"
+                />
 
         </LinearLayout>
 
@@ -69,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="kategori"
-                android:textColor="@color/navy_blue"
+                style="@style/colorTextBold"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -80,7 +77,7 @@
             android:layout_height="wrap_content"
             android:text="Type: "
             android:textSize="20sp"
-            android:textColor="@color/navy_blue"
+            style="@style/colorTextBold"
             android:textStyle="bold"/>
 
         <TextView
@@ -90,7 +87,7 @@
             android:gravity="end"
             android:textSize="20sp"
             android:text="jumlah"
-            android:textColor="@color/navy_blue"
+            style="@style/colorTextBold"
             android:textStyle="bold" />
 
             <Button

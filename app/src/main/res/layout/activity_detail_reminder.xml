@@ -8,28 +8,23 @@
     android:padding="20dp"
     tools:context=".view.DetailReminderActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Detail Pengingat"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        tools:layout_editor_absoluteX="20dp"
+        tools:layout_editor_absoluteY="47dp">
+
         <TextView
             android:id="@+id/tv_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Deskripsi"
-            android:textColor="#000000"
+            style="@style/colorText"
             tools:layout_editor_absoluteX="20dp" />
 
         <TextView
@@ -38,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="jumlah"
-            android:textColor="#000000"
+            style="@style/colorText"
             tools:layout_editor_absoluteX="20dp" />
 
         <TextView
@@ -47,8 +42,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Tenggat Waktu :"
-            android:textColor="#000000"
-            tools:layout_editor_absoluteX="20dp" />
+            style="@style/colorTextBold"
+            tools:layout_editor_absoluteX="20dp"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/et_desc"
@@ -56,8 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Deskripsi"
+            style="@style/colorText"
             android:visibility="gone"
-            android:textColor="#000000"
             tools:layout_editor_absoluteX="20dp" />
 
         <com.yuch.aturdana.view.MoneyEditText
@@ -66,8 +63,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="jumlah"
+            style="@style/colorText"
             android:visibility="gone"
-            android:textColor="#000000"
             tools:layout_editor_absoluteX="20dp" />
 
         <EditText
@@ -77,8 +74,8 @@
             android:layout_marginTop="8dp"
             android:enabled="false"
             android:text="Tenggat Waktu :"
+            style="@style/colorText"
             android:visibility="gone"
-            android:textColor="#000000"
             tools:layout_editor_absoluteX="20dp" />
 
         <LinearLayout
@@ -102,20 +99,22 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Selesai" />
+
             <Button
                 android:id="@+id/btnCancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Batal"
-                android:visibility="gone"/>
+                android:visibility="gone" />
+
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Simpan"
-                android:visibility="gone"/>
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

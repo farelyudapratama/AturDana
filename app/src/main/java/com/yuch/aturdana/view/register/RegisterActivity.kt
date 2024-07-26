@@ -63,8 +63,21 @@ class RegisterActivity : AppCompatActivity() {
             val email = binding.edRegisterEmail.text?.toString() ?: ""
             val password = binding.edRegisterPassword.text?.toString() ?: ""
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            if (name.isEmpty()) {
+                binding.edRegisterName.error = "Nama wajib diisi"
+                binding.edRegisterName.requestFocus()
+                return@setOnClickListener
+            }
+
+            if (email.isEmpty()) {
+                binding.edRegisterEmail.error = "Email wajib diisi"
+                binding.edRegisterEmail.requestFocus()
+                return@setOnClickListener
+            }
+
+            if (password.isEmpty()) {
+                binding.edRegisterPassword.error = "Kata sandi wajib diisi"
+                binding.edRegisterPassword.requestFocus()
                 return@setOnClickListener
             }
 
@@ -86,7 +99,7 @@ class RegisterActivity : AppCompatActivity() {
                                     if (dbTask.isSuccessful) {
                                         Toast.makeText(
                                             this,
-                                            "Registration successful",
+                                            "Pendaftaran berhasil",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                         addDefaultCategories(uid)
@@ -95,21 +108,21 @@ class RegisterActivity : AppCompatActivity() {
                                     } else {
                                         Toast.makeText(
                                             this,
-                                            "Failed to save user data",
+                                            "Gagal menyimpan data pengguna",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                        Log.w(TAG, "Failed to save user data", dbTask.exception)
+                                        Log.w(TAG, "Gagal menyimpan data pengguna", dbTask.exception)
                                     }
                                 }
                         } else {
-                            Toast.makeText(this, "User ID is null", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "User ID tidak ditemukan", Toast.LENGTH_SHORT).show()
                             Log.w(TAG, "User ID is null")
                         }
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.exception)
                         Toast.makeText(
                             baseContext,
-                            "Authentication failed.",
+                            "Pendaftaran gagal.",
                             Toast.LENGTH_SHORT,
                         ).show()
                     }
