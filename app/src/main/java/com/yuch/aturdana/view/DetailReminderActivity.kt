@@ -33,6 +33,9 @@ class DetailReminderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailReminderBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         reminderId = intent.getStringExtra("reminderId") ?: return
         Log.d("DetailReminderActivity", "Received reminderId from notification: $reminderId")
         auth = FirebaseAuth.getInstance()
@@ -64,11 +67,14 @@ class DetailReminderActivity : AppCompatActivity() {
             }
         }
     }
-
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
     private fun setupUI() {
         if (isEditMode) {
             // Mode Edit
-            binding.textView.text = "Edit Reminder"
+            supportActionBar?.title = "Edit Pengingat"
 
             binding.tvDesc.visibility = View.GONE
             binding.tvJumlah.visibility = View.GONE
@@ -89,7 +95,7 @@ class DetailReminderActivity : AppCompatActivity() {
             binding.btnSave.visibility = View.VISIBLE
         } else {
             // Mode Tampilan
-            binding.textView.text = "Detail Reminder"
+            supportActionBar?.title = "Detail Pengingat"
 
             binding.tvDesc.visibility = View.VISIBLE
             binding.tvJumlah.visibility = View.VISIBLE
@@ -124,7 +130,7 @@ class DetailReminderActivity : AppCompatActivity() {
         val userId = auth.currentUser?.uid
 
         // Perbarui data pengingat di Firebase Realtime Database
-        // Anda dapat menggunakan database.update() untuk memperbarui data yang ada
+        // dapat menggunakan database.update() untuk memperbarui data yang ada
         val desc = binding.etDesc.text.toString().trim()
         val jumlah = binding.etJumlah.getCleanDoubleValue().toString().trim()
         val date = binding.etDate.text.toString().trim()
@@ -239,7 +245,7 @@ class DetailReminderActivity : AppCompatActivity() {
                 reminder?.let {
                     binding.tvDesc.text = it.reminderDesc
                     binding.tvJumlah.text = it.reminderAmount?.toDoubleOrNull()?.toCurrencyFormat()
-                    binding.tvDate.text = it.reminderDate
+                    binding.tvDate.text = "Tenggat waktu: ${it.reminderDate}"
 
                     binding.etDesc.setText(it.reminderDesc)
                     binding.etJumlah.setText(it.reminderAmount)

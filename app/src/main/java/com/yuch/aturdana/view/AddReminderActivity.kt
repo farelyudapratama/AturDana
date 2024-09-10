@@ -7,21 +7,24 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.yuch.aturdana.databinding.ActivityReminderBinding
+import com.yuch.aturdana.databinding.ActivityReminderAddBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class ReminderActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityReminderBinding
+class AddReminderActivity : AppCompatActivity() {
+    private lateinit var binding : ActivityReminderAddBinding
     private lateinit var auth : FirebaseAuth
     private lateinit var database : DatabaseReference
     private val calendar: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityReminderBinding.inflate(layoutInflater)
+        binding = ActivityReminderAddBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportActionBar?.title = "Buat Pengingat"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
@@ -35,12 +38,35 @@ class ReminderActivity : AppCompatActivity() {
             }
         }
     }
-
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
     private fun sendReminder() {
         val reminderDesc = binding.etReminderDescription.text.toString()
         val reminderAmount = binding.etReminderAmount.getCleanDoubleValue().toString()
         val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val reminderDate = formatDate.format(calendar.time)
+
+        if (reminderDesc.isEmpty()) {
+            binding.etReminderDescription.error = "Deskripsi harus diisi"
+            binding.etReminderDescription.requestFocus()
+            return
+        }
+
+        val amountDouble: Double
+        try {
+            amountDouble = reminderAmount.toDouble()
+            if (amountDouble <= 0) {
+                binding.etReminderAmount.error = "Jumlah harus lebih dari 0"
+                binding.etReminderAmount.requestFocus()
+                return
+            }
+        } catch (e: NumberFormatException) {
+            binding.etReminderAmount.error = "Masukkan jumlah yang valid"
+            binding.etReminderAmount.requestFocus()
+            return
+        }
 
         val userId = auth.currentUser?.uid
         if (userId != null) {
@@ -53,6 +79,7 @@ class ReminderActivity : AppCompatActivity() {
                     "reminderAmount" to reminderAmount,
                     "reminderDate" to reminderDate
                     )
+
                 database.child("reminders").child(reminderId).setValue(reminderMap)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Reminder set successfully", Toast.LENGTH_SHORT).show()

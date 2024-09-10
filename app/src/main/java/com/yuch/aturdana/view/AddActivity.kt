@@ -34,6 +34,9 @@ class AddActivity : AppCompatActivity() {
         binding = ActivityAddBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.title = "Tambah Transaksi"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
         setCurrentDateTime()
@@ -68,7 +71,11 @@ class AddActivity : AppCompatActivity() {
         }
         onBackPressedDispatcher.addCallback(this, callback)
     }
-
+    override fun onSupportNavigateUp(): Boolean {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+        return true
+    }
     private fun setCurrentDateTime() {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -199,8 +206,22 @@ class AddActivity : AppCompatActivity() {
         val date = binding.datepickerTanggal.text.toString()
         val time = binding.timepickerWaktu.text.toString()
 
-        if (amount == null) {
-            Toast.makeText(this, "Masukkan jumlah yang valid", Toast.LENGTH_SHORT).show()
+        if (category.isEmpty()) {
+            Toast.makeText(this, "Pilih kategori", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val amountDouble: Double
+        try {
+            amountDouble = amount.toDouble()
+            if (amountDouble <= 0) {
+                binding.edittextJumlah.error = "Jumlah harus lebih dari 0"
+                binding.edittextJumlah.requestFocus()
+                return
+            }
+        } catch (e: NumberFormatException) {
+            binding.edittextJumlah.error = "Masukkan jumlah yang valid"
+            binding.edittextJumlah.requestFocus()
             return
         }
 

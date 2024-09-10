@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
@@ -19,10 +20,7 @@
         android:theme="@style/Theme.AturDana"
         tools:targetApi="31">
         <activity
-            android:name=".view.ExpenseActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.IncomeActivity"
+            android:name=".view.CariTransaksiActivity"
             android:exported="false" />
         <activity
             android:name=".view.DetailTransaksiActivity"
@@ -34,7 +32,7 @@
             android:name=".view.DetailReminderActivity"
             android:exported="false" />
         <activity
-            android:name=".view.ReminderActivity"
+            android:name=".view.AddReminderActivity"
             android:exported="false" />
         <activity
             android:name=".view.EditProfileActivity"

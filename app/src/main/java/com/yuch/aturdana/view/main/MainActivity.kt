@@ -4,8 +4,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
@@ -27,15 +30,43 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         setupAction()
 
-        val serviceIntent = Intent(this, ReminderCheckService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (isNetworkAvailable()) {
+            val serviceIntent = Intent(this, ReminderCheckService::class.java)
             startService(serviceIntent)
+            createNotificationChannels()
         } else {
-            startService(serviceIntent)
+            showNoInternetDialog()
         }
-        createNotificationChannels()
-
     }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(network) ?: return false
+            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo = connectivityManager.activeNetworkInfo
+            @Suppress("DEPRECATION")
+            return networkInfo != null && networkInfo.isConnected
+        }
+    }
+
+    private fun showNoInternetDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Tidak Ada Koneksi Internet")
+            .setMessage("Aplikasi memerlukan koneksi internet untuk melanjutkan.")
+            .setPositiveButton("Keluar") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(

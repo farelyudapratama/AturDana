@@ -58,7 +58,7 @@ class ReminderCheckService : Service() {
                 val channel = NotificationChannel(
                     "REMINDER_CHANNEL",
                     "Reminder Notifications",
-                    NotificationManager.IMPORTANCE_HIGH
+                    NotificationManager.IMPORTANCE_LOW
                 )
                 notificationManager.createNotificationChannel(channel)
             }
@@ -68,6 +68,7 @@ class ReminderCheckService : Service() {
                 .setContentText("Service is running")
                 .setSmallIcon(R.drawable.baseline_notifications_24)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                 .build()
 
             // Panggil startForeground() di sini
@@ -98,7 +99,6 @@ class ReminderCheckService : Service() {
                         val isNotificationEnabled = getNotificationPreference()
                         if (isNotificationEnabled && reminder?.reminderDate != null && reminder.status != "selesai") {
                             if (isDateTodayOrPast(reminder.reminderDate, todayDate)) {
-                                // If the reminder is not completed and the deadline is today or passed, show notification
                                 showNotification(reminder)
                             }
                         }
@@ -144,7 +144,7 @@ class ReminderCheckService : Service() {
             putExtra("reminderId", reminder.reminderId)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(this, "REMINDER_CHANNEL")
             .setSmallIcon(R.drawable.baseline_notifications_24)
@@ -162,7 +162,7 @@ class ReminderCheckService : Service() {
     private fun scheduleNextCheck() {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, ReminderCheckService::class.java)
-        val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val intervalMillis = 30 * 60 * 1000 // 30 minutes in milliseconds
         val triggerAtMillis = SystemClock.elapsedRealtime() + intervalMillis

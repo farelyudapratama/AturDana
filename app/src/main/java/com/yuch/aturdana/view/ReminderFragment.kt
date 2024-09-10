@@ -3,6 +3,7 @@ package com.yuch.aturdana.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -23,13 +24,13 @@ class ReminderFragment : Fragment(R.layout.fragment_reminder) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentReminderBinding.bind(view)
-
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
 
         _binding.apply {
             buttonSetReminder.setOnClickListener {
-                val intent = Intent(requireContext(), ReminderActivity::class.java)
+                val intent = Intent(requireContext(), AddReminderActivity::class.java)
                 startActivity(intent)
             }
         }
@@ -49,6 +50,14 @@ class ReminderFragment : Fragment(R.layout.fragment_reminder) {
                         if (reminder != null) {
                             reminderList.add(reminder)
                         }
+                    }
+
+                    if (reminderList.isEmpty()) {
+                        _binding.tvEmptyReminder.visibility = View.VISIBLE
+                        _binding.reminderList.visibility = View.GONE
+                    } else {
+                        _binding.tvEmptyReminder.visibility = View.GONE
+                        _binding.reminderList.visibility = View.VISIBLE
                     }
 
                     reminderList.sortByDescending {

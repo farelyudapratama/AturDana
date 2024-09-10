@@ -25,6 +25,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     buildFeatures {

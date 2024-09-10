@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +27,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentHomeBinding.bind(view)
-
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
 
@@ -35,11 +36,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         _binding.apply {
             cardPendapatan.setOnClickListener {
-                val intent = Intent(requireContext(), IncomeActivity::class.java)
+                val intent = Intent(requireContext(), CariTransaksiActivity::class.java)
+                intent.putExtra("IS_INCOME", true)
                 startActivity(intent)
             }
             cardPengeluaran.setOnClickListener {
-                val intent = Intent(requireContext(), ExpenseActivity::class.java)
+                val intent = Intent(requireContext(), CariTransaksiActivity::class.java)
+                intent.putExtra("IS_INCOME", false)
                 startActivity(intent)
             }
         }
@@ -71,6 +74,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             transaction.transactionId = data.key
                             transactions.add(transaction)
                         }
+                    }
+
+                    if (transactions.isEmpty()) {
+                        _binding.tvEmptyTransactions.visibility = View.VISIBLE
+                        _binding.rvTransaksi.visibility = View.GONE
+                    } else {
+                        _binding.tvEmptyTransactions.visibility = View.GONE
+                        _binding.rvTransaksi.visibility = View.VISIBLE
                     }
 
                     // Sort transactions by date
@@ -113,6 +124,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     val calendar = Calendar.getInstance()
                     val currentMonth = calendar.get(Calendar.MONTH) + 1 // Januari = 0, jadi ditambah 1
                     val currentYear = calendar.get(Calendar.YEAR)
+                    var updatePendapatan = false
+                    var updatePengeluaran = false
 
                     for (data in dataSnapshot.children) {
                         val type = data.child("type").getValue(String::class.java)
@@ -133,9 +146,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                         totalPendapatan += amountDouble
                                         Log.d("HomeFragmentIfStatement", "Total Pendapatan: $totalPendapatan")
                                         lastUpdatePendapatan = "$date $time"
+                                        updatePendapatan = true
                                     } else if (type == "Pengeluaran") {
                                         totalPengeluaran += amountDouble
                                         lastUpdatePengeluaran = "$date $time"
+                                        updatePengeluaran = true
                                     }
                                 }
                             }
@@ -145,8 +160,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     _binding.apply {
                         tvTotalPendapatan.setFormattedCurrency(totalPendapatan)
                         tvTotalPengeluaran.setFormattedCurrency(totalPengeluaran)
-                        tvTerakhirUpdatePendapatan.text = "Terakhir update : $lastUpdatePendapatan"
-                        tvTerakhirUpdatePengeluaran.text = "Terakhir update : $lastUpdatePengeluaran"
+                        tvTerakhirUpdatePendapatan.text = if (updatePendapatan) {
+                            "Terakhir update : $lastUpdatePendapatan"
+                        } else {
+                            "Tidak ada transaksi pendapatan bulan ini"
+                        }
+                        tvTerakhirUpdatePengeluaran.text = if (updatePengeluaran) {
+                            "Terakhir update : $lastUpdatePengeluaran"
+                        } else {
+                            "Tidak ada transaksi pengeluaran bulan ini"
+                        }
                     }
                 }
 

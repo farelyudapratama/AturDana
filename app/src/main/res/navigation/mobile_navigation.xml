@@ -35,9 +35,9 @@
     </fragment>
     <activity
         android:id="@+id/reminderActivity"
-        android:name="com.yuch.aturdana.view.ReminderActivity"
+        android:name="com.yuch.aturdana.view.AddReminderActivity"
         android:label="activity_reminder"
-        tools:layout="@layout/activity_reminder" />
+        tools:layout="@layout/activity_reminder_add" />
     <activity
         android:id="@+id/editProfileActivity"
         android:name="com.yuch.aturdana.view.EditProfileActivity"
