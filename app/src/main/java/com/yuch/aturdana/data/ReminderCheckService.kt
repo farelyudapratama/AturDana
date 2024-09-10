@@ -99,7 +99,6 @@ class ReminderCheckService : Service() {
                         val isNotificationEnabled = getNotificationPreference()
                         if (isNotificationEnabled && reminder?.reminderDate != null && reminder.status != "selesai") {
                             if (isDateTodayOrPast(reminder.reminderDate, todayDate)) {
-                                // If the reminder is not completed and the deadline is today or passed, show notification
                                 showNotification(reminder)
                             }
                         }

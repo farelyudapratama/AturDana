@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.yuch.aturdana.R
-import com.yuch.aturdana.data.BudgetStatusAdapter
+import com.yuch.aturdana.data.BudgetAdapter
 import com.yuch.aturdana.data.pref.BudgetModel
 import com.yuch.aturdana.data.pref.BudgetStatusModel
 import com.yuch.aturdana.data.pref.TransactionModel
@@ -63,7 +63,16 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
                             budgetList.add(budget)
                         }
                     }
-                    getTransaction(budgetList)
+
+                    if (budgetList.isEmpty()) {
+                        _binding.tvEmptyBudget.visibility = View.VISIBLE
+                        _binding.recyclerViewBudgets.visibility = View.GONE
+                    } else {
+                        _binding.tvEmptyBudget.visibility = View.GONE
+                        _binding.recyclerViewBudgets.visibility = View.VISIBLE
+                        getTransaction(budgetList)
+                    }
+
 //                    displayBudgetList(budgetList)
 
                 }
@@ -175,7 +184,7 @@ class BudgetFragment : Fragment(R.layout.fragment_budget) {
     }
     private fun displayBudgetStatusList(budgetStatusList: List<BudgetStatusModel>) {
         val recyclerView = _binding.recyclerViewBudgets
-        val adapter = BudgetStatusAdapter(budgetStatusList) { budgetStatus ->
+        val adapter = BudgetAdapter(budgetStatusList) { budgetStatus ->
             showDeleteConfirmationDialog(budgetStatus)
         }
         recyclerView.adapter = adapter

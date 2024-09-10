@@ -52,6 +52,14 @@ class ReminderFragment : Fragment(R.layout.fragment_reminder) {
                         }
                     }
 
+                    if (reminderList.isEmpty()) {
+                        _binding.tvEmptyReminder.visibility = View.VISIBLE
+                        _binding.reminderList.visibility = View.GONE
+                    } else {
+                        _binding.tvEmptyReminder.visibility = View.GONE
+                        _binding.reminderList.visibility = View.VISIBLE
+                    }
+
                     reminderList.sortByDescending {
                         val parts = it.reminderDate!!.split("/")
                         val year = parts[2].toInt()

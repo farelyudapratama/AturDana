@@ -36,12 +36,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         _binding.apply {
             cardPendapatan.setOnClickListener {
-                val intent = Intent(requireContext(), SearchTransactionActivity::class.java)
+                val intent = Intent(requireContext(), CariTransaksiActivity::class.java)
                 intent.putExtra("IS_INCOME", true)
                 startActivity(intent)
             }
             cardPengeluaran.setOnClickListener {
-                val intent = Intent(requireContext(), SearchTransactionActivity::class.java)
+                val intent = Intent(requireContext(), CariTransaksiActivity::class.java)
                 intent.putExtra("IS_INCOME", false)
                 startActivity(intent)
             }
@@ -74,6 +74,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             transaction.transactionId = data.key
                             transactions.add(transaction)
                         }
+                    }
+
+                    if (transactions.isEmpty()) {
+                        _binding.tvEmptyTransactions.visibility = View.VISIBLE
+                        _binding.rvTransaksi.visibility = View.GONE
+                    } else {
+                        _binding.tvEmptyTransactions.visibility = View.GONE
+                        _binding.rvTransaksi.visibility = View.VISIBLE
                     }
 
                     // Sort transactions by date

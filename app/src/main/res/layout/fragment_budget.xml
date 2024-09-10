@@ -28,4 +28,15 @@
             android:layout_marginBottom="90dp"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tv_empty_budget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="16dp"
+        android:text="Tidak ada Anggaran yang diatur"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
 </FrameLayout>

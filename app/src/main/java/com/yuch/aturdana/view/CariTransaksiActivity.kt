@@ -8,23 +8,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.yuch.aturdana.R
 import com.yuch.aturdana.data.TransactionAdapter
 import com.yuch.aturdana.data.pref.TransactionModel
-import com.yuch.aturdana.databinding.ActivitySearchTransactionBinding
+import com.yuch.aturdana.databinding.ActivityCariTransaksiBinding
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SearchTransactionActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySearchTransactionBinding
+class CariTransaksiActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityCariTransaksiBinding
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private var isIncome: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySearchTransactionBinding.inflate(layoutInflater)
+        binding = ActivityCariTransaksiBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         isIncome = intent.getBooleanExtra("IS_INCOME", false)
@@ -103,7 +102,7 @@ class SearchTransactionActivity : AppCompatActivity() {
                     binding.rvTransaksi.visibility = View.VISIBLE
                     val adapter = TransactionAdapter(transactions)
                     binding.rvTransaksi.adapter = adapter
-                    binding.rvTransaksi.layoutManager = LinearLayoutManager(this@SearchTransactionActivity)
+                    binding.rvTransaksi.layoutManager = LinearLayoutManager(this@CariTransaksiActivity)
                     binding.tvTotalTransaction.setFormattedCurrency(totalTransaction)
                     binding.tvTotalTransactionTitle.text = if (isIncome) "Total Pendapatan Keseluruhan" else "Total Pengeluaran Keseluruhan"
                 }
@@ -195,7 +194,7 @@ class SearchTransactionActivity : AppCompatActivity() {
 
                 val adapter = TransactionAdapter(transactions)
                 binding.rvTransaksi.adapter = adapter
-                binding.rvTransaksi.layoutManager = LinearLayoutManager(this@SearchTransactionActivity)
+                binding.rvTransaksi.layoutManager = LinearLayoutManager(this@CariTransaksiActivity)
                 binding.tvTotalTransaction.setFormattedCurrency(totalPendapatan)
                 binding.tvTotalTransactionTitle.text = if (isIncome) "Total Pendapatan" else "Total Pengeluaran"
             }

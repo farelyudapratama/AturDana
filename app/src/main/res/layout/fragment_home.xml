@@ -87,8 +87,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="90dp"
-                tools:listitem="@layout/item_transaksi"/>
+                tools:listitem="@layout/item_transaksi" />
         </LinearLayout>
     </ScrollView>
-
+    <TextView
+        android:id="@+id/tv_empty_transactions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="16dp"
+        android:text="Tidak ada transaksi saat ini"
+        android:textStyle="bold"
+        android:visibility="gone"/>
 </FrameLayout>

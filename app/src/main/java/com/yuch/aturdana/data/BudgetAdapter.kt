@@ -11,10 +11,10 @@ import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.BudgetStatusModel
 import com.yuch.aturdana.view.setFormattedCurrency
 
-class BudgetStatusAdapter(
+class BudgetAdapter(
     private val budgetStatusList: List<BudgetStatusModel>,
     private val onDeleteClick: (BudgetStatusModel) -> Unit
-) : RecyclerView.Adapter<BudgetStatusAdapter.BudgetStatusViewHolder>() {
+) : RecyclerView.Adapter<BudgetAdapter.BudgetStatusViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetStatusViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_budget, parent, false)
