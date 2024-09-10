@@ -91,7 +91,8 @@ class RegisterActivity : AppCompatActivity() {
                             val userMap = hashMapOf(
                                 "username" to name,
                                 "email" to email,
-                                "avatarUrl" to "https://firebasestorage.googleapis.com/v0/b/financial-management-ddcdb.appspot.com/o/images%2Ffoto.jpg?alt=media&token=a8a480ea-b463-4c76-8be1-ef929af3e461",
+                                "avatarUrl" to null,
+//                                "avatarUrl" to "https://firebasestorage.googleapis.com/v0/b/financial-management-ddcdb.appspot.com/o/images%2Ffoto.jpg?alt=media&token=a8a480ea-b463-4c76-8be1-ef929af3e461",
                                 "createdAt" to System.currentTimeMillis()
                             )
                             database.child("users").child(uid).setValue(userMap)

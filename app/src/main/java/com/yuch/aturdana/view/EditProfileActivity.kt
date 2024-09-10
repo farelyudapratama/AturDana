@@ -1,9 +1,12 @@
 package com.yuch.aturdana.view
 
 import android.content.ContentValues.TAG
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -20,6 +23,7 @@ import com.google.firebase.storage.StorageReference
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.UserModel
 import com.yuch.aturdana.databinding.ActivityEditProfileBinding
+import java.io.ByteArrayOutputStream
 
 class EditProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditProfileBinding
@@ -109,28 +113,46 @@ class EditProfileActivity : AppCompatActivity() {
             finish()
         }
     }
+
+    private fun compressImage(uri: Uri): ByteArray {
+        val inputStream = contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
+        return outputStream.toByteArray()
+    }
+
+
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
     }
+
     private fun uploadImageAndSaveData(uri: Uri) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val uid = currentUser.uid
             val imageRef = storage.child("$uid/avatar.jpg")
 
-            imageRef.putFile(uri)
+            val compressedImage = compressImage(uri)
+
+            binding.progressBar.visibility = View.VISIBLE
+
+            imageRef.putBytes(compressedImage)
                 .addOnSuccessListener {
                     imageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
                         saveUserProfile(downloadUrl.toString())
+                    }.addOnCompleteListener {
+                        binding.progressBar.visibility = View.GONE
                     }
                 }
                 .addOnFailureListener { exception ->
+                    binding.progressBar.visibility = View.GONE
                     Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, "uploadImageAndSaveData: ${exception.message}")
                 }
         }
     }
+
     private fun saveUserProfile(avatarUrl: String?) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -139,21 +161,27 @@ class EditProfileActivity : AppCompatActivity() {
 
             val newUsername = if (username != originalUser.username) username else originalUser.username
             val email = originalUser.email
+            val categories = originalUser.categories
             val newAvatarUrl = avatarUrl ?: originalUser.avatarUrl
             val createdAt = originalUser.createdAt
 
-            val user = UserModel(newUsername, email, newAvatarUrl, createdAt)
+            val user = UserModel(newUsername, email, categories, newAvatarUrl, createdAt)
+
+            binding.progressBar.visibility = View.VISIBLE
 
             database.child(uid).setValue(user)
                 .addOnSuccessListener {
+                    binding.progressBar.visibility = View.GONE
                     Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { exception ->
+                    binding.progressBar.visibility = View.GONE
                     Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, "saveUserProfile: ${exception.message}")
                 }
         }
     }
+
 
 }

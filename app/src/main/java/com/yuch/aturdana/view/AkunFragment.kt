@@ -58,6 +58,7 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
                             Log.d(ContentValues.TAG, "onDataChange: ${it.avatarUrl}")
                             Glide.with(this@AkunFragment)
                                 .load(it.avatarUrl)
+                                .error(R.drawable.baseline_person_24)
                                 .into(ivAvatar)
                         }
                     }
