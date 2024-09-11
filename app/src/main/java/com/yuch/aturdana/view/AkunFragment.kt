@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.yuch.aturdana.GuideActivity
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.UserModel
 import com.yuch.aturdana.databinding.FragmentAkunBinding
@@ -106,6 +107,10 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
         _binding?.apply {
             tvEditProfile.setOnClickListener {
                 val intent = Intent(requireContext(), EditProfileActivity::class.java)
+                startActivity(intent)
+            }
+            tvTentangAplikasi.setOnClickListener {
+                val intent = Intent(requireContext(), GuideActivity::class.java)
                 startActivity(intent)
             }
             btnLogout.setOnClickListener {

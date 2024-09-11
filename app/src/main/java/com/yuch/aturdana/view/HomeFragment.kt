@@ -1,9 +1,11 @@
 package com.yuch.aturdana.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +15,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.yuch.aturdana.GuideActivity
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.TransactionAdapter
 import com.yuch.aturdana.data.pref.TransactionModel
@@ -178,6 +181,38 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             })
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkAndShowGuidePopup()
+    }
+
+    private fun checkAndShowGuidePopup() {
+        val sharedPreferences = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val lastOpened = sharedPreferences.getLong("last_opened", 0)
+        val currentTime = System.currentTimeMillis()
+//        val threeDaysInMillis = 3 * 24 * 60 * 60 * 1000 // 3 hari
+        val threeDaysInMillis = 5 * 60 * 1000 // 5 menit
+
+        if (lastOpened == 0L || currentTime - lastOpened > threeDaysInMillis) {
+            showGuidePopup()
+        }
+
+        // Update last opened time
+        sharedPreferences.edit().putLong("last_opened", currentTime).apply()
+    }
+
+    private fun showGuidePopup() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Panduan Penggunaan")
+            .setMessage("Anda dapat menekan OK untuk melihat panduan penggunaan aplikasi.")
+            .setPositiveButton("OK") { dialog, _ ->
+                val intent = Intent(requireContext(), GuideActivity::class.java)
+                startActivity(intent)
+            }
+            .setNegativeButton("Batal") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     companion object
