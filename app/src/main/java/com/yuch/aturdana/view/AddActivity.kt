@@ -226,13 +226,95 @@ class AddActivity : AppCompatActivity() {
         }
 
         val userId = auth.currentUser?.uid
-        val transactionId = database.child("transaction").push().key
+        if (userId != null) {
+            // Ambil bulan dan tahun dari tanggal
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val parsedDate = dateFormat.parse(date) ?: return
+            val month = SimpleDateFormat("M", Locale.getDefault()).format(parsedDate)
+            val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(parsedDate)
 
-        if (userId != null && transactionId != null) {
+            // Ambil anggaran dari Firebase berdasarkan kategori, bulan, dan tahun
+            database.child("budgets")
+                .orderByChild("user_id").equalTo(userId)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        var budget = 0.0
+                        for (budgetSnapshot in snapshot.children) {
+                            val budgetCategory = budgetSnapshot.child("category_id").getValue(String::class.java)
+                            val budgetMonth = budgetSnapshot.child("month").getValue(String::class.java)
+                            val budgetYear = budgetSnapshot.child("year").getValue(String::class.java)
+                            val budgetAmount = budgetSnapshot.child("amount").getValue(String::class.java)?.toDouble() ?: 0.0
+
+                            if (category == budgetCategory && month == budgetMonth && year == budgetYear) {
+                                budget = budgetAmount
+                                break
+                            }
+                        }
+
+                        if (budget == 0.0) {
+                            saveTransactionToFirebase(userId, type, category, amountDouble, note, date, time)
+                            return
+                        }
+
+                        // Hitung total pengeluaran untuk kategori ini di bulan dan tahun yang sama
+                        database.child("transaction")
+                            .orderByChild("category_id").equalTo(category)
+                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(transactionSnapshot: DataSnapshot) {
+                                    var totalSpent = 0.0
+                                    for (transaction in transactionSnapshot.children) {
+                                        val transactionDate = transaction.child("date").getValue(String::class.java) ?: ""
+                                        val transactionParsedDate = dateFormat.parse(transactionDate)
+                                        val transactionMonth = SimpleDateFormat("M", Locale.getDefault()).format(transactionParsedDate)
+                                        val transactionYear = SimpleDateFormat("yyyy", Locale.getDefault()).format(transactionParsedDate)
+
+                                        if (transactionMonth == month && transactionYear == year) {
+                                            val transactionAmount = transaction.child("amount").getValue(String::class.java)?.toDouble() ?: 0.0
+                                            totalSpent += transactionAmount
+                                        }
+                                    }
+
+                                    // Hanya tampilkan dialog jika total pengeluaran melebihi anggaran
+                                    if (totalSpent + amountDouble > budget) {
+                                        // Anggaran habis, ini opsi untuk memaksa transaksi
+                                        AlertDialog.Builder(this@AddActivity).apply {
+                                            setTitle("Anggaran habis")
+                                            setMessage("Anggaran untuk kategori ini pada bulan dan tahun ini sudah habis. Apakah Anda ingin tetap menyimpan transaksi dan membuat anggaran menjadi negatif?")
+                                            setPositiveButton("Ya") { _, _ ->
+                                                saveTransactionToFirebase(userId, type, category, amountDouble, note, date, time)
+                                            }
+                                            setNegativeButton("Tidak") { dialog, _ ->
+                                                dialog.dismiss()
+                                            }
+                                            show()
+                                        }
+                                    } else {
+                                        // Jika anggaran masih cukup, simpan transaksi tanpa dialog
+                                        saveTransactionToFirebase(userId, type, category, amountDouble, note, date, time)
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    // Handle error
+                                }
+                            })
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle error
+                    }
+                })
+        }
+    }
+
+    // Method untuk menyimpan transaksi ke Firebase
+    private fun saveTransactionToFirebase(userId: String, type: String, category: String, amount: Double, note: String, date: String, time: String) {
+        val transactionId = database.child("transaction").push().key
+        if (transactionId != null) {
             val transaction = mapOf(
                 "type" to type,
                 "category_id" to category,
-                "amount" to amount,
+                "amount" to amount.toString(),
                 "description" to note,
                 "date" to date,
                 "time" to time,
@@ -240,12 +322,12 @@ class AddActivity : AppCompatActivity() {
             )
             database.child("transaction").child(transactionId).setValue(transaction)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Transaksi berhasil disimpan", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
+                    Toast.makeText(this@AddActivity, "Transaksi berhasil disimpan", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@AddActivity, MainActivity::class.java))
                     finish()
                 }
                 .addOnFailureListener {
-                    Toast.makeText(this, "Gagal menyimpan transaksi", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddActivity, "Gagal menyimpan transaksi", Toast.LENGTH_SHORT).show()
                 }
         }
     }
