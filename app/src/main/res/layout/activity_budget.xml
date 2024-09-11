@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.BudgetActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Berapa Anggaran Anda?"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+
+        <com.yuch.aturdana.view.MoneyEditText
+            android:id="@+id/et_budget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="Rp.0"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kategori"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinner_kategori"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:prompt="@string/pilih_kategori" />
+
+            <Button
+                android:id="@+id/buttonTambahKategori"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/baseline_add_circle_24"
+                android:text="tambah"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="Bulan"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_vertical"/>
+
+            <Spinner
+                android:id="@+id/spinnerMonth"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:textStyle="bold"
+                android:text="Tahun"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp" />
+
+            <EditText
+                android:id="@+id/editTextYear"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:inputType="number"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp"
+                android:hint="2024"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_simpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Simpan" />
+
+    </LinearLayout>
+
+</ScrollView>

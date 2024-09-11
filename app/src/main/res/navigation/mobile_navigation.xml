@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation.xml"
+    app:startDestination="@id/homeFragment">
+
+     <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.yuch.aturdana.view.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/budgetFragment"
+        android:name="com.yuch.aturdana.view.BudgetFragment"
+        android:label="fragment_budget"
+        tools:layout="@layout/fragment_budget" />
+    <fragment
+        android:id="@+id/reminderFragment"
+        android:name="com.yuch.aturdana.view.ReminderFragment"
+        android:label="fragment_reminder"
+        tools:layout="@layout/fragment_reminder" >
+        <action
+            android:id="@+id/action_reminderFragment_to_reminderActivity"
+            app:destination="@id/reminderActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/akunFragment"
+        android:name="com.yuch.aturdana.view.AkunFragment"
+        android:label="fragment_akun"
+        tools:layout="@layout/fragment_akun" >
+        <action
+            android:id="@+id/action_akunFragment_to_editProfileActivity"
+            app:destination="@id/editProfileActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/reminderActivity"
+        android:name="com.yuch.aturdana.view.AddReminderActivity"
+        android:label="activity_reminder"
+        tools:layout="@layout/activity_reminder_add" />
+    <activity
+        android:id="@+id/editProfileActivity"
+        android:name="com.yuch.aturdana.view.EditProfileActivity"
+        android:label="activity_edit_profile"
+        tools:layout="@layout/activity_edit_profile" />
+</navigation>

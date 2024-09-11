@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/activity_splash_scene"
+    tools:context=".view.splash.SplashActivity">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/backgroundLayoutLogo"
+      android:layout_width="250dp"
+      android:layout_height="250dp"
+      android:background="#DA5959"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <ImageView
+      android:id="@+id/logo"
+      android:layout_width="180dp"
+      android:layout_height="180dp"
+      android:contentDescription="icon splash screen"
+      android:src="@mipmap/ic_launcher"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:id="@+id/splashText"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/app_name"
+      android:textSize="44sp"
+      android:textStyle="bold"
+      app:layout_constraintTop_toBottomOf="@+id/backgroundLayoutLogo"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      android:textColor="@color/black"/>
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
