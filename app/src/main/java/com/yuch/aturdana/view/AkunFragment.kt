@@ -108,6 +108,10 @@ class AkunFragment : Fragment(R.layout.fragment_akun) {
                 val intent = Intent(requireContext(), EditProfileActivity::class.java)
                 startActivity(intent)
             }
+            tvTentangAplikasi.setOnClickListener {
+                val intent = Intent(requireContext(), GuideActivity::class.java)
+                startActivity(intent)
+            }
             btnLogout.setOnClickListener {
                 val dialogBuilder = AlertDialog.Builder(requireContext())
                 dialogBuilder.setMessage("Apakah anda yakin untuk logout ini?")

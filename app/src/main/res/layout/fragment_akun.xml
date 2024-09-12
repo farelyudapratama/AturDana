@@ -83,8 +83,23 @@
                 android:layout_height="wrap_content"
                 android:defaultValue="true"
                 android:padding="22dp"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:text="Aktifkan Notifikasi"
                 android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_TentangAplikasi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:drawableTint="?attr/colorPrimaryVariant"
+                android:padding="22dp"
+                android:text="Panduan Aplikasi"
+                android:textColor="?attr/colorPrimaryVariant"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:drawableStartCompat="@drawable/baseline_info_24" />
+
             <Button
                 android:id="@+id/btn_logout"
                 android:layout_marginStart="12dp"
