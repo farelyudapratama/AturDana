@@ -7,4 +7,16 @@
     <string name="akun_fragment">Akun Fragment</string>
     <string name="reminder_fragment">Reminder Fragment</string>
     <string name="pilih_kategori">tes</string>
+    <string name="guide_transaction">1. Klik ikon tambah pada bagian bawah layar untuk menambahkan transaksi baru.\n\n
+    2. Pilih tipe transaksi pendapatan/pengeluaran.\n\n
+    3. Pilih kategorinya (Jika tidak sesuai bisa ditambahkan).\n\n
+    4. Masukkan jumlah nominalnya.\n\n
+    5. Masukkan catatan bila perlu.\n\n
+    6. Pilih tanggal dan waktu (Jika tidak diatur akan menyesuaikan dengan waktu saat ini).\n\n
+    7. Klik tombol simpan untuk menyimpan transaksi.\n\n</string>
+    <string name="guide_budget">1. Klik tambah anggaran.\n\n
+    2. Masukkan jumlah anggarannya.\n\n
+    3. Pilih kategorinya.\n\n
+    4. Pilih bulan dan tahun.\n\n
+    5. Klik tombol simpan.\n\n</string>
 </resources>

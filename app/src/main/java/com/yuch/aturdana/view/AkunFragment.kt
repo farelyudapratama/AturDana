@@ -18,7 +18,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.yuch.aturdana.GuideActivity
 import com.yuch.aturdana.R
 import com.yuch.aturdana.data.pref.UserModel
 import com.yuch.aturdana.databinding.FragmentAkunBinding
