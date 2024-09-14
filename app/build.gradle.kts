@@ -65,4 +65,5 @@ dependencies {
 
     // Add Glide Library
     implementation(libs.glide)
+    implementation(kotlin("script-runtime"))
 }

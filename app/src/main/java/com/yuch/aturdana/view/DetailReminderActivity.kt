@@ -1,10 +1,12 @@
 package com.yuch.aturdana.view
 
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -15,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.yuch.aturdana.data.pref.ReminderModel
 import com.yuch.aturdana.databinding.ActivityDetailReminderBinding
+import com.yuch.aturdana.view.main.MainActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -66,8 +69,16 @@ class DetailReminderActivity : AppCompatActivity() {
                 updateReminder(reminderId)
             }
         }
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                startActivity(Intent(this@DetailReminderActivity, MainActivity::class.java))
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
     override fun onSupportNavigateUp(): Boolean {
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
         return true
     }
