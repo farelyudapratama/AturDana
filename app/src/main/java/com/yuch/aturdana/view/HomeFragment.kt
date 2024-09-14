@@ -191,8 +191,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val sharedPreferences = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
         val lastOpened = sharedPreferences.getLong("last_opened", 0)
         val currentTime = System.currentTimeMillis()
-//        val threeDaysInMillis = 3 * 24 * 60 * 60 * 1000 // 3 hari
-        val threeDaysInMillis = 5 * 60 * 1000 // 5 menit
+        val threeDaysInMillis = 3 * 24 * 60 * 60 * 1000 // 3 hari
+//        val fiveMinutesInMillis = 5 * 60 * 1000 // 5 menit
 
         if (lastOpened == 0L || currentTime - lastOpened > threeDaysInMillis) {
             showGuidePopup()
